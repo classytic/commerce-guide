@@ -1,0 +1,88 @@
+{
+  "module": "Chart of Accounts",
+  "slug": "accounting-chart-of-accounts",
+  "section": "Accounting · Ledger",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "The company-wide ledger that every branch posts against. Open it, find any account, seed the standard BFRS chart, and link a new account — all from one screen.",
+  "out": "accounting.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Open Chart of Accounts",
+      "tag": "Ledger menu",
+      "narration": "From the Accounting sidebar, under Ledger, select Chart of Accounts. This is your single company-wide chart — the same accounts are shared across every branch.",
+      "img": "screenshots/acc-full.png",
+      "box": {
+        "x": 73,
+        "y": 129,
+        "w": 190,
+        "h": 32
+      }
+    },
+    {
+      "action": "SEARCH",
+      "title": "Find an account fast",
+      "tag": "Search",
+      "narration": "With 684 accounts in the chart, use the search box to jump to one by code, name, or number. The Type filter and the Invalid-only switch beside it narrow the list further.",
+      "img": "screenshots/acc-full.png",
+      "box": {
+        "x": 312,
+        "y": 202,
+        "w": 384,
+        "h": 40
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Seed the standard chart",
+      "tag": "One-click seed",
+      "narration": "Starting a fresh company? Seed Defaults installs the complete BFRS chart of accounts in one click, so you never build the ledger by hand.",
+      "img": "screenshots/acc-full.png",
+      "box": {
+        "x": 917,
+        "y": 121,
+        "w": 139,
+        "h": 32
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Add a new account",
+      "tag": "Primary action",
+      "narration": "To create a single account, click Add Account. A side sheet slides in to capture just the details that matter.",
+      "img": "screenshots/acc-full.png",
+      "box": {
+        "x": 1065,
+        "y": 121,
+        "w": 134,
+        "h": 32
+      }
+    },
+    {
+      "action": "CHOOSE",
+      "title": "Choose the account type",
+      "tag": "Select type",
+      "narration": "Pick the account type the new account inherits from — asset, liability, income, or expense. The number and statement placement follow automatically from the type.",
+      "img": "screenshots/acc-sheet-vp.png",
+      "box": {
+        "x": 386,
+        "y": 123,
+        "w": 394,
+        "h": 32
+      }
+    },
+    {
+      "action": "SAVE",
+      "title": "Create the account",
+      "tag": "Writes to ledger",
+      "narration": "Click Create Account. The account is written into the company-wide ledger and is instantly available to every branch's postings — no per-branch setup needed.",
+      "img": "screenshots/acc-sheet-vp.png",
+      "box": {
+        "x": 821,
+        "y": 509,
+        "w": 428,
+        "h": 36
+      }
+    }
+  ]
+}
