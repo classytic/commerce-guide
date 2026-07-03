@@ -1,0 +1,58 @@
+{
+  "module": "Warehouse Management",
+  "slug": "warehouse-wms-lifecycle",
+  "section": "Warehouse · WMS",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "The full warehouse lifecycle end to end — model the site, receive goods, let reorder rules replenish, batch picks into waves, count stock, and publish a standard cost. Six screens, one continuous flow.",
+  "out": "warehouse.html",
+  "steps": [
+    {
+      "action": "ORIENT",
+      "title": "Set up your warehouse structure",
+      "tag": "Your warehouse",
+      "narration": "Warehouse Management is the physical layer — warehouses, then Locations and UoM Groups under Setup. Head Office already has its Default Warehouse, marked Active; add more to model extra sites.",
+      "img": "screenshots/warehouses.png",
+      "box": { "x": 296, "y": 212, "w": 304, "h": 104 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Receive goods with a procurement order",
+      "tag": "New Procurement Order",
+      "narration": "Under Procurement, click New Procurement Order to bring goods in from a supplier. Receiving against it posts the units into stock at the head-office warehouse.",
+      "img": "screenshots/procurement.png",
+      "box": { "x": 1033, "y": 181, "w": 207, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Auto-replenish from reorder rules",
+      "tag": "Run & Generate POs",
+      "narration": "Replenishment turns min-max rules into purchase orders. Use Dry Run to preview, then Run & Generate POs to raise them automatically — or New Rule to define a fresh reorder point.",
+      "img": "screenshots/replenishment.png",
+      "box": { "x": 913, "y": 201, "w": 181, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Batch picks into a wave",
+      "tag": "New Wave",
+      "narration": "Pick Waves group outbound move-lines into one picking run — planned, released, in progress, completed. Click New Wave and select the move lines from the inventory queue to release them together.",
+      "img": "screenshots/pick-waves.png",
+      "box": { "x": 1132, "y": 196, "w": 108, "h": 28 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Count stock with an audit session",
+      "tag": "Cycle Count",
+      "narration": "Stock Audit verifies physical inventory. Start a Spot Check for a few SKUs, a Cycle Count for a rolling subset, or a Full Count for everything — posted variances adjust on-hand automatically.",
+      "img": "screenshots/stock-audit.png",
+      "box": { "x": 987, "y": 181, "w": 128, "h": 32 }
+    },
+    {
+      "action": "SAVE",
+      "title": "Publish a standard cost",
+      "tag": "Writes valuation",
+      "narration": "Standard Costs set the valuation baseline. Publish Cost fixes a SKU's standard; Compute Variance compares it to actual purchase price so purchase-price variance flows to the ledger.",
+      "img": "screenshots/standard-costs.png",
+      "box": { "x": 1110, "y": 176, "w": 130, "h": 32 }
+    }
+  ]
+}

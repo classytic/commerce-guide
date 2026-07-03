@@ -1,0 +1,50 @@
+{
+  "module": "Inventory & Stock Control",
+  "slug": "inventory-stock-control",
+  "section": "Inventory · WMS",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "Track stock per branch, catch what is running low, move goods between branches on a challan, replenish from suppliers, and audit every movement — the day-to-day inventory loop in five screens.",
+  "out": "inventory.html",
+  "steps": [
+    {
+      "action": "SEARCH",
+      "title": "Check stock levels for the branch",
+      "tag": "Scan or search",
+      "narration": "Stock Levels opens on the active branch — Head Office here, costed FIFO in BDT. Scan a barcode or type a SKU to pull its on-hand, reserved, and available quantities instantly.",
+      "img": "screenshots/stock-levels.png",
+      "box": { "x": 312, "y": 508, "w": 640, "h": 40 }
+    },
+    {
+      "action": "ORIENT",
+      "title": "See what to restock next",
+      "tag": "Needs reorder",
+      "narration": "Low Stock lists every item below its reorder threshold. Needs Reorder counts what to act on now; the Deficit column shows exactly how many units short each SKU is.",
+      "img": "screenshots/low-stock.png",
+      "box": { "x": 943, "y": 232, "w": 219, "h": 56 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Move stock between branches",
+      "tag": "New Transfer",
+      "narration": "Transfers move goods branch-to-branch on a challan. Click New Transfer and follow the head-office flow — create, approve, dispatch. The move decrements the sender and increments the receiver in one step.",
+      "img": "screenshots/transfers.png",
+      "box": { "x": 1104, "y": 266, "w": 120, "h": 28 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Raise a purchase order",
+      "tag": "New Purchase Order",
+      "narration": "To replenish from a supplier rather than another branch, open Purchase Orders and click New Purchase Order. Received goods post straight into stock and update on-hand quantities.",
+      "img": "screenshots/purchase-orders.png",
+      "box": { "x": 1061, "y": 242, "w": 163, "h": 28 }
+    },
+    {
+      "action": "ORIENT",
+      "title": "Audit every stock movement",
+      "tag": "Filter the ledger",
+      "narration": "Movements is the full audit trail — every receipt, shipment, transfer, and adjustment with its from-and-to and status. Filter by type, SKU, or date range to trace exactly how a quantity changed.",
+      "img": "screenshots/movements.png",
+      "box": { "x": 312, "y": 240, "w": 912, "h": 36 }
+    }
+  ]
+}
