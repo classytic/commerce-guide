@@ -1,90 +1,98 @@
 {
-  "module": "Purchase Orders",
+  "module": "Procure-to-Pay",
   "slug": "inventory-purchase-orders",
-  "section": "Inventory · Procure-to-Pay",
+  "section": "How it works · Purchasing → Inventory → Ledger",
   "branchContext": "Head Office (HO-001)",
-  "lede": "The full procure-to-pay flow in one screen: raise a purchase order, receive the goods into stock, then post the vendor bill with a built-in 3-way match that catches over-billing before A/P is booked. Everything a buyer needs — order, receipt, bill, payment — without leaving the list.",
+  "lede": "A purchase order is not a status field — it is the trigger for two independent resolutions that must stay in lockstep. This guide follows one PO end to end and shows what actually happens underneath: how receiving resolves into INVENTORY (a Flow move, a quant increment, a cost layer) AND into the LEDGER (a GR/IR accrual), and how posting the bill clears that accrual into Accounts Payable. Understand this once and every downstream report — stock valuation, GR/IR, A/P aging — makes sense.",
   "out": "purchase-orders.html",
   "steps": [
     {
       "action": "NAVIGATE",
       "title": "Open Purchase Orders",
       "tag": "Inventory menu",
-      "narration": "From the Inventory sidebar, select Purchase Orders. This is the buyer's home base — every PO for the active branch, from draft to received to fully paid, in one filterable list.",
+      "narration": "Purchase Orders is where a buying INTENT is recorded. Creating a PO touches nothing physical and nothing financial yet — no stock moves, no journal posts. It only becomes real when goods are received. That separation is the whole point: intent, then resolution.",
       "img": "screenshots/po-list.png",
       "box": { "x": 73, "y": 225, "w": 190, "h": 32 }
     },
     {
-      "action": "SEARCH",
-      "title": "Filter by status and payment",
-      "tag": "Status + Payment",
-      "narration": "Narrow the list fast: the Status filter (Draft / Approved / Received / Cancelled) and the Payment filter (Unpaid / Partial / Paid) stack, so 'Received + Unpaid' instantly surfaces exactly the orders that still owe a vendor bill.",
-      "img": "screenshots/po-list.png",
-      "box": { "x": 388, "y": 240, "w": 226, "h": 32 }
-    },
-    {
       "action": "CLICK",
-      "title": "Raise a new purchase order",
-      "tag": "Primary action",
-      "narration": "Click New Purchase Order. A side sheet opens to capture the supplier, terms, and the lines you're buying — no page reload, no separate screen.",
+      "title": "Raise the order",
+      "tag": "New Purchase Order",
+      "narration": "New Purchase Order opens a side sheet: supplier, terms, and the lines you're buying. At this moment the PO is a Draft — a document, not a transaction. Approve it and it's authorised to receive.",
       "img": "screenshots/po-list.png",
       "box": { "x": 1061, "y": 242, "w": 163, "h": 28 }
     },
     {
-      "action": "CLICK",
-      "title": "Pick the supplier",
-      "tag": "Supplier",
-      "narration": "Choose the supplier the goods are coming from. The supplier drives the payable partner, the default credit terms, and — for designated buyers — whether VDS is withheld when the bill is paid.",
-      "img": "screenshots/po-create.png",
-      "box": { "x": 402, "y": 190, "w": 378, "h": 32 }
-    },
-    {
       "action": "SELECT",
-      "title": "Set the payment terms",
+      "title": "Terms decide the accounting path",
       "tag": "Cash vs Credit",
-      "narration": "Cash purchases settle on receipt (no separate bill). Credit purchases accrue accounts payable — goods receipt books inventory against a GR/IR clearing account, and the vendor bill you post later clears it. Pick Credit for the standard bill-then-pay flow.",
+      "narration": "This one field forks the whole resolution. CASH: receipt settles immediately (Dr Inventory / Cr Cash), no payable. CREDIT: receipt accrues against a GR/IR clearing account and a separate vendor bill later becomes the payable. Pick Credit to see the full two-step — the pattern every ERP-grade purchase follows.",
       "img": "screenshots/po-create.png",
       "box": { "x": 401, "y": 365, "w": 407, "h": 32 }
     },
     {
       "action": "CLICK",
-      "title": "Create the order",
+      "title": "Create + approve",
       "tag": "Save",
-      "narration": "Add each line by barcode or SKU, then Create Purchase Order. It lands in Draft; approve it, and it's ready to receive when the goods arrive.",
+      "narration": "Add lines by barcode or SKU, then Create Purchase Order. Approval moves it to 'approved' — the goods can now be received. Still zero ledger impact: you have committed to buy, not received or owed anything.",
       "img": "screenshots/po-create.png",
       "box": { "x": 820, "y": 513, "w": 427, "h": 32 }
     },
     {
-      "action": "CLICK",
-      "title": "Open a received PO",
-      "tag": "Row menu → View Details",
-      "narration": "When goods arrive, receive the PO — stock posts to inventory and the GR/IR accrual is booked automatically. Then reopen it from the row's menu → View Details to bill it.",
+      "action": "RESOLVE",
+      "title": "Receiving resolves INVENTORY",
+      "tag": "Flow: move → quant → cost layer",
+      "narration": "When you Receive, the Flow WMS kernel does three things atomically — this is the inventory resolution. (1) It creates a MOVE from the supplier's virtual vendor location into your stock location. (2) It increments the SKU's QUANT — the on-hand number Stock Levels shows. (3) It opens a COST LAYER at the received unit cost, which is what later values COGS (FIFO/AVCO) when you sell. A receipt is never a flag flip; it is these three records.",
       "img": "screenshots/po-list.png",
-      "box": { "x": 1171, "y": 351, "w": 36, "h": 28 }
+      "box": { "x": 313, "y": 333, "w": 169, "h": 63 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The same receipt resolves the LEDGER",
+      "tag": "Dr Inventory 1164 / Cr GR-IR 2125",
+      "narration": "Simultaneously, the purchase-received bridge posts the accounting — here on the Journal Entries list. It debits Inventory (1164) and credits GR/IR (2125), 'Goods Received / Invoice Received'. Note what it does NOT do: it does not credit Accounts Payable, because no vendor invoice exists yet. GR/IR is the placeholder that says 'we hold the goods, we owe someone, we just haven't seen the paper.'",
+      "img": "screenshots/po-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 96 }
     },
     {
       "action": "CLICK",
-      "title": "Post the vendor bill",
+      "title": "Reopen the PO to bill it",
       "tag": "Pinned action bar",
-      "narration": "The detail sheet's action bar is pinned to the bottom, so Receive, Post Vendor Bill and Record Payment are always one click away — no scrolling past the line items. Click Post Vendor Bill to raise the payable.",
+      "narration": "Open the received PO's detail. Its action bar is pinned to the bottom of the sheet, so Receive, Post Vendor Bill and Record Payment stay one click away no matter how long the line-items run — the primary actions are never buried below the fold.",
       "img": "screenshots/po-detail.png",
       "box": { "x": 385, "y": 517, "w": 137, "h": 28 }
     },
     {
       "action": "TYPE",
-      "title": "3-way match: enter the vendor's actual invoice",
-      "tag": "Over-billing guard",
-      "narration": "This is the control that stops overpaying suppliers. The field pre-fills with the PO total; type the amount on the vendor's real paper invoice instead. The system reconciles billed vs. PO vs. received — within tolerance it posts silently; beyond tolerance it warns or blocks, and the variance is stamped on the journal entry for audit.",
+      "title": "3-way match — the over-billing guard",
+      "tag": "Billed vs PO vs Received",
+      "narration": "Post Vendor Bill opens the match. The field pre-fills with the PO total; you overwrite it with the amount on the vendor's real paper invoice. The system reconciles three numbers — what was billed, what the PO agreed, what was received. Within tolerance it posts silently; beyond tolerance it warns or blocks (configurable), and stamps the variance on the journal entry. This is the control that stops paying a supplier more than you agreed or received.",
       "img": "screenshots/po-postbill.png",
       "box": { "x": 424, "y": 276, "w": 416, "h": 32 }
     },
     {
+      "action": "RESOLVE",
+      "title": "The bill CLEARS GR/IR into Accounts Payable",
+      "tag": "Dr GR-IR 2125 · Dr Input VAT · Cr A/P 2111",
+      "narration": "Posting the bill books the second half of the two-step: it DEBITS GR/IR (2125) — cancelling the credit the receipt made — debits claimable Input VAT (1701), and credits Accounts Payable (2111), net of any VDS withheld (Cr 2136). The GR/IR account nets to zero: received value in, billed value out. You now hold a real, aging-tracked payable and reclaimable input VAT — and inventory was only ever debited once, at receipt.",
+      "img": "screenshots/po-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 48 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "GR/IR report — the reconciliation surface",
+      "tag": "Goods received, not invoiced",
+      "narration": "Any PO received but not yet billed leaves a non-zero GR/IR (2125) balance. This report lists exactly those — 'goods we hold but haven't been invoiced for' — grouped by PO with aging. Finance clears them before period close; the close gate blocks the period if GR/IR is not zero, guaranteeing inventory and payables can never silently drift apart across periods.",
+      "img": "screenshots/po-grir-report.png",
+      "box": { "x": 300, "y": 175, "w": 920, "h": 150 }
+    },
+    {
       "action": "CLICK",
-      "title": "Book the payable",
-      "tag": "Post Bill",
-      "narration": "Post Bill clears the GR/IR accrual and credits Accounts Payable (net of any withheld VDS), booking claimable input VAT in the same entry. The bill is now a matched, aging-tracked payable ready for Record Payment.",
-      "img": "screenshots/po-postbill.png",
-      "box": { "x": 767, "y": 365, "w": 72, "h": 36 }
+      "title": "Payment settles A/P",
+      "tag": "Record Payment",
+      "narration": "Record Payment is the final resolution: Dr Accounts Payable (2111) / Cr Cash or Bank, matched to the bill so the payable clears. Until then the amount sits on A/P Aging with its due date. Cash → goods → GR/IR → A/P → paid: five states, each an explicit ledger entry, all traceable back to this one purchase order.",
+      "img": "screenshots/po-detail.png",
+      "box": { "x": 530, "y": 517, "w": 140, "h": 28 }
     }
   ]
 }
