@@ -10,7 +10,7 @@
       "action": "NAVIGATE",
       "title": "Orders is the sell-side lifecycle",
       "tag": "Placed → Paid → Shipped → Delivered",
-      "narration": "Every customer order for the active branch, with its payment and fulfilment status. Placing an order does NOT move stock or post revenue — it records intent and RESERVES the units. Reservation is a soft hold: available on-hand drops, but nothing has physically left and nothing has hit the ledger. Cart abandonment releases the hold (and re-syncs the storefront projection).",
+      "narration": "Every customer order for the active branch, with its payment and fulfilment status. Placing an order RESERVES the units — a soft hold where available on-hand drops but nothing has physically left the shelf. When money hits the ledger depends on terms: a prepaid/POS sale books revenue when paid, whereas a COD order books the receivable and revenue at placement (Dr A/R 1141) because the courier collects later. Either way COGS waits for fulfilment. Cart abandonment releases the hold and re-syncs the storefront projection.",
       "img": "screenshots/orders-list.png",
       "box": { "x": 430, "y": 198, "w": 491, "h": 32 }
     },
@@ -40,9 +40,9 @@
     },
     {
       "action": "RESOLVE",
-      "title": "Fulfilment resolves the LEDGER",
-      "tag": "Dr COGS 5111 / Cr Inventory · Dr A/R 1141 / Cr Revenue 4111 + Output VAT 2132",
-      "narration": "Two postings land here. At COST: Dr COGS (5111) / Cr Inventory (1164) — the value leaves the balance sheet. At PRICE: Dr Accounts Receivable (1141) — or Cash for a paid/POS sale — / Cr Sales Revenue (4111) + Cr Output VAT (2132). Inventory leaves at cost, revenue books at price; the gap is your gross margin, computed from the exact cost layers consumed above.",
+      "title": "The sale posts TWO separate journal entries",
+      "tag": "COGS: Dr 5111 / Cr 1164 · Revenue: Dr cash-or-A/R / Cr 4111 + 2132",
+      "narration": "A sale never nets cost and price into one entry — they are two JEs so the P&L stays honest. (1) COST, on fulfilment: Dr COGS (5111) / Cr Inventory (1164) at the cost-layer value consumed above. (2) PRICE: Cr Sales Revenue (4111) + Cr Output VAT (2132), and the DEBIT routes by how the customer pays — card → Gateway Clearing (1125, held by the gateway until payout), bKash/Nagad → Mobile Money (1126), cash → Petty Cash (1111), and COD → Accounts Receivable (1141), because the courier collects and remits later. Inventory leaves at cost, revenue books at price; the gap is gross margin. A promo posts as a Dr Sales Discount (4115) contra-revenue line so gross sales stay visible in the trial balance rather than being silently netted off.",
       "img": "screenshots/sales-journals.png",
       "box": { "x": 280, "y": 300, "w": 770, "h": 96 }
     },
