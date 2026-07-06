@@ -1,0 +1,58 @@
+{
+  "module": "Loyalty",
+  "slug": "loyalty-points",
+  "section": "How it works · Earn → Tiers → Redeem",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "Loyalty is a two-way ledger of trust: customers EARN points on what they buy and REDEEM them for discounts — and both sides resolve into the same order pipeline and the same books. Follow a point from the rule that mints it, through the tier it qualifies, to the till where it's redeemed — where the SERVER (never the client) reserves the points, turns them into a discount, and confirms the spend only when the sale actually lands. Every number here was captured from a real redemption.",
+  "out": "loyalty.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Loyalty is rules + tiers, not a toggle",
+      "tag": "EarningRule · LoyaltyTier",
+      "narration": "The program is data, not hardcode. An EarningRule (order / category / action / tier-bonus) decides how many points a purchase mints; a LoyaltyTier decides status. The engine consults these live at order-paid time, so changing a rule changes tomorrow's earning without a deploy. The dashboard shows how many of each are active.",
+      "img": "screenshots/loyalty-dashboard.png",
+      "box": { "x": 280, "y": 185, "w": 660, "h": 130 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Earning resolves at order-PAID, once",
+      "tag": "order-loyalty-hook · per-rule idempotency",
+      "narration": "Points are credited when an order reaches chargeStatus = full — POS cash at the counter, or a web order paid later — NOT at placement. The order-loyalty-hook runs the active EarningRules against the order (here: 0.1 point per BDT) and credits the member. Per-rule idempotency keyed orderId:ruleId means a re-fire from either the born-paid or paid-later path can never double-credit. Points are earned once, when money is actually in hand.",
+      "img": "screenshots/loyalty-earning-rules.png",
+      "box": { "x": 290, "y": 250, "w": 920, "h": 70 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Tiers qualify on lifetime points",
+      "tag": "rank + min lifetime points → status",
+      "narration": "A LoyaltyTier carries a rank and a minimum lifetime-points threshold; the member's tier is whatever they qualify for. Tier-bonus earning rules can then multiply points for higher tiers, so status compounds. The current tier is denormalised onto the member document so the till can show it instantly without a lookup at the point of sale.",
+      "img": "screenshots/loyalty-tiers.png",
+      "box": { "x": 290, "y": 250, "w": 920, "h": 70 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Redemption is SERVER-owned (like promo)",
+      "tag": "scan card → reserve points → discount",
+      "narration": "At the till, scanning the member's card attaches them and reveals Redeem Points with their balance and a cap (here 15,177 pts ≈ ৳1,517). The cashier enters points; the client shows a DISPLAY-ONLY preview (points ÷ conversionRate = discount, capped at maxRedeemPercent). But the server owns the spend: pos.controller RESERVES the points — decrementing the member's balance — and computes the real discount. The client can't fabricate a redemption it didn't earn.",
+      "img": "screenshots/pos-redemption.png",
+      "box": { "x": 836, "y": 250, "w": 426, "h": 200 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Reserved points become totals.discount",
+      "tag": "one pipeline · reserve → confirm / release",
+      "narration": "The reservation's discountAmount is folded into the order's canonical totals.discount — the SAME field manual and promo discounts feed — so the kernel re-derives grandTotal = subtotal − discount. Here 500 points → ৳50 off ৳7,998 → ৳7,948. On order success the redemption is CONFIRMED (finalising the debited points); on failure it's RELEASED (the balance restored). It is idempotent, mirroring exactly the promo reserve/commit/rollback lifecycle — three discount sources, one pipeline.",
+      "img": "screenshots/pos-redemption.png",
+      "box": { "x": 836, "y": 150, "w": 426, "h": 170 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Books and balance move together (verified)",
+      "tag": "ORD-2026-0132 · −৳50 · −500 pts",
+      "narration": "On the real sale captured here, two things resolved atomically: the order booked grandTotal ৳7,948 (subtotal ৳7,998 − discount ৳50) AND the member's balance dropped 15,177 → 14,677, exactly −500 points. On the ledger the redemption discount reduces recognised revenue (net Sales Revenue 4111) like any other discount — so a redeemed point costs the business real, tracked revenue, and can never be spent twice. Earn and redeem are two directions of one auditable points ledger, both settling through the order.",
+      "img": "screenshots/pos-redemption.png",
+      "box": { "x": 836, "y": 150, "w": 426, "h": 220 }
+    }
+  ]
+}
