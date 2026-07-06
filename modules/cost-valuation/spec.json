@@ -1,0 +1,58 @@
+{
+  "module": "Cost & Valuation",
+  "slug": "cost-valuation",
+  "section": "How it works · Layers → Method → COGS",
+  "branchContext": "Per-branch (cost layers per node)",
+  "lede": "Every other guide in this suite says the same three words — 'consumes cost layers'. This is the guide that explains them. Inventory value on your balance sheet is not a number anyone types in; it is the live SUM of cost layers, each opened by a receipt at the price you actually paid. When you sell, transfer or write off, a layer drains — and the price frozen in that layer becomes your COGS. Understand the layer and you understand where every margin number in the system comes from.",
+  "out": "cost-valuation.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Inventory value = the sum of cost layers",
+      "tag": "Total Inventory Value → account 1164",
+      "narration": "The branch totals are not a stored figure — they are computed by summing every live cost layer: Σ (remainingQty × unitCost) across all SKUs and locations. That total IS what account 1164 Merchandise should read on the trial balance. Total Units, Unique SKUs and Avg Unit Cost all fall out of the same layer set. The balance sheet and the warehouse are two views of one underlying ledger of layers.",
+      "img": "screenshots/cost-totals.png",
+      "box": { "x": 290, "y": 168, "w": 950, "h": 122 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "A receipt OPENS a layer",
+      "tag": "CostLayer{ skuRef, unitCost, remainingQty, receivedAt }",
+      "narration": "Every procurement receipt creates a CostLayer — skuRef, unitCost, remainingQty, receivedAt, plus the procurement and move refs that trace it back. This is precisely what 'receiving opens a cost layer' meant in the procure-to-pay and warehouse guides. The layer is the atom of valuation: nothing about inventory value exists independently of the layers, so the receipt is where cost is born.",
+      "img": "screenshots/cost-totals.png",
+      "box": { "x": 290, "y": 300, "w": 950, "h": 130 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The valuation METHOD picks which layer drains",
+      "tag": "FIFO · FEFO · WAC · STANDARD · SPECIFIC",
+      "narration": "When stock leaves, the valuation policy decides which layer's cost applies. FIFO drains the oldest layer first (the default here). FEFO drains the nearest-expiry layer (for lots and perishables). WAC blends every layer into one weighted-average unit cost. STANDARD uses a fixed cost and books the difference as a variance. SPECIFIC pins an exact layer (serialised goods). The policy also has a scope — organization, node, or per-SKU — so different product classes can cost differently.",
+      "img": "screenshots/cost-totals.png",
+      "box": { "x": 290, "y": 300, "w": 950, "h": 60 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Draining a layer IS the COGS number",
+      "tag": "consumed unitCost × qty → Dr 5111 / Cr 1164",
+      "narration": "On a sale, POS ticket or transfer, the drained layers give unitCost × quantity — and that is exactly the amount posted Dr COGS (5111) / Cr Inventory (1164). Your gross margin is the sale price minus this consumed cost. So the price you paid a supplier weeks ago, frozen into that layer, is what sets today's margin — and the reason the Sales, POS and Returns guides could each name a concrete COGS figure. Change the valuation method and the same physical sale can report a different cost.",
+      "img": "screenshots/cost-totals.png",
+      "box": { "x": 290, "y": 168, "w": 950, "h": 122 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Landed cost uplifts layers; transfers carry them",
+      "tag": "capitalize freight/duty · sender_cost across branches",
+      "narration": "Layers are not just the invoice price. Freight and duty CAPITALIZE into them (landedCostAllocation: by value, quantity, weight or equal) so cost reflects true acquisition cost per IAS 2 — the same landed-cost bridge the procurement guide posts. Inter-branch transfers carry layer value across at sender_cost, standard_cost or transfer_price — the 1179 In-Transit bridge from the Transfers guide is moving layer value between branches. A negative-cost guard (freeze_last / zero / error) stops a drain from an empty layer producing nonsense.",
+      "img": "screenshots/cost-totals.png",
+      "box": { "x": 290, "y": 168, "w": 950, "h": 122 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Cost Gaps — shipments that found no layer",
+      "tag": "zero-value COGS placeholder → backfill → resolve",
+      "narration": "If stock ships but no layer resolves — the product never had a cost price, or an oversell drained its layers — COGS posts a ZERO-value placeholder rather than failing, and the entry lands on Cost Data Gaps. Finance backfills the product's cost (a PO receipt, an adjustment, or manual entry) and the next sale resolves cost normally. This report is the guarantee that every unit sold eventually carries a real cost — the reconciliation surface that closes the loop between the WMS and the P&L.",
+      "img": "screenshots/cost-gaps.png",
+      "box": { "x": 300, "y": 168, "w": 945, "h": 210 }
+    }
+  ]
+}
