@@ -1,0 +1,58 @@
+{
+  "module": "Returns & RMA",
+  "slug": "returns-rma",
+  "section": "How it works · Confirm → Goods + Ledger + Money",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "A return is the sale run backwards — but it is not one reversal, it is three. When an admin confirms an RMA, a single event (order:change.confirmed) fans out to three independent handlers: goods move back, the ledger reverses, and money is refunded. The pivot is the per-line DISPOSITION: whether each returned unit re-enters the balance sheet as a sellable asset or leaves it as a loss. Follow one confirmation and watch all three resolutions fall out of that one field.",
+  "out": "returns-rma.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "The RMA queue — returns, exchanges, claims",
+      "tag": "One surface, all orders",
+      "narration": "Every Return, Exchange and Claim across all orders lands here, filterable by type and status. A request is created as a draft / pending review — at that point nothing physical or financial has happened. It is an intent, exactly like a purchase order was on the buy side. Only CONFIRM turns it into money and stock movement.",
+      "img": "screenshots/returns-list.png",
+      "box": { "x": 330, "y": 66, "w": 640, "h": 84 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Raise a request — with a disposition per line",
+      "tag": "restock vs damaged decides everything",
+      "narration": "New Request lets ops create an RMA on a customer's behalf (phone, in-store, escalation). Pick Return / Exchange / Claim, then add the exact lines and quantities coming back. The decisive input is each line's DISPOSITION — restock (goods are sellable again) versus damaged / scrap / write-off (goods are dead). This one field forks the entire accounting below; it is set at creation time, not guessed later.",
+      "img": "screenshots/returns-new-request.png",
+      "box": { "x": 424, "y": 128, "w": 420, "h": 120 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "One confirm fires THREE independent resolutions",
+      "tag": "order:change.confirmed → goods · ledger · money",
+      "narration": "Confirming the request emits order:change.confirmed, and three subscribers react to it independently — one for physical goods, one for the ledger, one for the money. They are decoupled on purpose: a gateway refund failure must never roll back the restock, and reversing the ledger must not wait on the courier. Three concerns, three handlers, same event.",
+      "img": "screenshots/returns-list.png",
+      "box": { "x": 335, "y": 110, "w": 430, "h": 40 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Disposition decides the INVENTORY resolution",
+      "tag": "Flow move: customer loc → DEFAULT or ADJUSTMENT",
+      "narration": "The stock handler runs a Flow moveGroup that brings the units back from the virtual customer location. Where they land depends on disposition: restock → the DEFAULT (sellable) location, so the quant rejoins available stock and the storefront projection re-syncs; damaged / scrap → the ADJUSTMENT location, off the sellable books for good. Same return, two very different physical destinations — driven entirely by the per-line field from step 2.",
+      "img": "screenshots/returns-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 48 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "...and the LEDGER resolution splits on the same field",
+      "tag": "restock: Dr 1164 / Cr 5111 · damaged: Dr 6711 / Cr 1164",
+      "narration": "The ledger handler posts a different journal entry per line depending on disposition. RESTOCK is a COGS REVERSAL: Dr Inventory (1164) / Cr COGS (5111) — the asset comes back on the balance sheet at the exact cost layer it left on, cancelling the original cost of sale. DAMAGED is an INVENTORY LOSS: Dr Shrinkage (6711) / Cr Inventory (1164) — goods left the warehouse permanently, just not in a sale. The split matters: posting a COGS reversal for damaged goods would falsely inflate inventory and understate the true cost of running returns.",
+      "img": "screenshots/returns-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 96 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Money settles separately — and skips COD",
+      "tag": "Dr Revenue 4111 + Dr VAT 2132 / Cr original instrument",
+      "narration": "The refund handler reverses the sale's PRICE side, mirroring the sales contract: Dr Sales Revenue (4111) + Dr Output VAT (2132) — lowering both revenue and the VAT liability — Cr the SAME instrument the customer paid on (card → Gateway Clearing 1125, cash → Petty Cash 1111). It deliberately SKIPS COD orders: the courier never handed over money, so ops settle those manually. Because output VAT drops here, the return also flows into next month's Mushak 9.1. When cumulative refunds reach the order's grand total, the order transitions to 'refunded' — the sale fully unwound across goods, ledger and cash.",
+      "img": "screenshots/returns-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 144 }
+    }
+  ]
+}
