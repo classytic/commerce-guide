@@ -1,0 +1,90 @@
+{
+  "module": "Purchase Orders",
+  "slug": "inventory-purchase-orders",
+  "section": "Inventory · Procure-to-Pay",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "The full procure-to-pay flow in one screen: raise a purchase order, receive the goods into stock, then post the vendor bill with a built-in 3-way match that catches over-billing before A/P is booked. Everything a buyer needs — order, receipt, bill, payment — without leaving the list.",
+  "out": "purchase-orders.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Open Purchase Orders",
+      "tag": "Inventory menu",
+      "narration": "From the Inventory sidebar, select Purchase Orders. This is the buyer's home base — every PO for the active branch, from draft to received to fully paid, in one filterable list.",
+      "img": "screenshots/po-list.png",
+      "box": { "x": 73, "y": 225, "w": 190, "h": 32 }
+    },
+    {
+      "action": "SEARCH",
+      "title": "Filter by status and payment",
+      "tag": "Status + Payment",
+      "narration": "Narrow the list fast: the Status filter (Draft / Approved / Received / Cancelled) and the Payment filter (Unpaid / Partial / Paid) stack, so 'Received + Unpaid' instantly surfaces exactly the orders that still owe a vendor bill.",
+      "img": "screenshots/po-list.png",
+      "box": { "x": 388, "y": 240, "w": 226, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Raise a new purchase order",
+      "tag": "Primary action",
+      "narration": "Click New Purchase Order. A side sheet opens to capture the supplier, terms, and the lines you're buying — no page reload, no separate screen.",
+      "img": "screenshots/po-list.png",
+      "box": { "x": 1061, "y": 242, "w": 163, "h": 28 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Pick the supplier",
+      "tag": "Supplier",
+      "narration": "Choose the supplier the goods are coming from. The supplier drives the payable partner, the default credit terms, and — for designated buyers — whether VDS is withheld when the bill is paid.",
+      "img": "screenshots/po-create.png",
+      "box": { "x": 402, "y": 190, "w": 378, "h": 32 }
+    },
+    {
+      "action": "SELECT",
+      "title": "Set the payment terms",
+      "tag": "Cash vs Credit",
+      "narration": "Cash purchases settle on receipt (no separate bill). Credit purchases accrue accounts payable — goods receipt books inventory against a GR/IR clearing account, and the vendor bill you post later clears it. Pick Credit for the standard bill-then-pay flow.",
+      "img": "screenshots/po-create.png",
+      "box": { "x": 401, "y": 365, "w": 407, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Create the order",
+      "tag": "Save",
+      "narration": "Add each line by barcode or SKU, then Create Purchase Order. It lands in Draft; approve it, and it's ready to receive when the goods arrive.",
+      "img": "screenshots/po-create.png",
+      "box": { "x": 820, "y": 513, "w": 427, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Open a received PO",
+      "tag": "Row menu → View Details",
+      "narration": "When goods arrive, receive the PO — stock posts to inventory and the GR/IR accrual is booked automatically. Then reopen it from the row's menu → View Details to bill it.",
+      "img": "screenshots/po-list.png",
+      "box": { "x": 1171, "y": 351, "w": 36, "h": 28 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Post the vendor bill",
+      "tag": "Pinned action bar",
+      "narration": "The detail sheet's action bar is pinned to the bottom, so Receive, Post Vendor Bill and Record Payment are always one click away — no scrolling past the line items. Click Post Vendor Bill to raise the payable.",
+      "img": "screenshots/po-detail.png",
+      "box": { "x": 385, "y": 517, "w": 137, "h": 28 }
+    },
+    {
+      "action": "TYPE",
+      "title": "3-way match: enter the vendor's actual invoice",
+      "tag": "Over-billing guard",
+      "narration": "This is the control that stops overpaying suppliers. The field pre-fills with the PO total; type the amount on the vendor's real paper invoice instead. The system reconciles billed vs. PO vs. received — within tolerance it posts silently; beyond tolerance it warns or blocks, and the variance is stamped on the journal entry for audit.",
+      "img": "screenshots/po-postbill.png",
+      "box": { "x": 424, "y": 276, "w": 416, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Book the payable",
+      "tag": "Post Bill",
+      "narration": "Post Bill clears the GR/IR accrual and credits Accounts Payable (net of any withheld VDS), booking claimable input VAT in the same entry. The bill is now a matched, aging-tracked payable ready for Record Payment.",
+      "img": "screenshots/po-postbill.png",
+      "box": { "x": 767, "y": 365, "w": 72, "h": 36 }
+    }
+  ]
+}
