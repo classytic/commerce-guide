@@ -1,0 +1,50 @@
+{
+  "module": "Warehouse Loading & Catalog Link",
+  "slug": "warehouse-loading-catalog",
+  "section": "How it works · Purchase → Warehouse → Catalog",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "The procure-to-pay guide showed WHAT a receipt posts to the ledger. This one shows WHERE the goods physically land and how they become sellable. Follow the received stock as it loads into a warehouse location, becomes an on-hand quant, and links back — by SKU — to a catalog product whose storefront buy-button reflects it automatically. This is the join between purchasing, the WMS, and the catalog.",
+  "out": "warehouse-loading.html",
+  "steps": [
+    {
+      "action": "RESOLVE",
+      "title": "Every branch is a warehouse node",
+      "tag": "Node + 4 locations",
+      "narration": "A receipt doesn't land in 'the warehouse' abstractly — it lands at a specific NODE. On first use each branch auto-provisions one warehouse node plus four locations: stock (your real on-hand shelf), vendor (virtual — where purchases come FROM), customer (virtual — where sales go TO), and adjustment (virtual — for counts and write-offs). Physical and virtual locations are the same primitive; that symmetry is why every move is a clean double-entry of stock.",
+      "img": "screenshots/wh-warehouses.png",
+      "box": { "x": 280, "y": 196, "w": 500, "h": 128 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Receiving is a move INTO the stock location",
+      "tag": "vendor loc → stock loc",
+      "narration": "When you received the PO, the Flow move ran from the supplier's VENDOR location into the STOCK location shown here. Quant is tracked PER LOCATION — that is how the system distinguishes goods physically on your shelf from goods in-transit on a transfer, or units removed by an adjustment. Load-in is literally 'increment the quant at the stock location'.",
+      "img": "screenshots/wh-locations.png",
+      "box": { "x": 296, "y": 276, "w": 275, "h": 53 }
+    },
+    {
+      "action": "NAVIGATE",
+      "title": "Stock Levels reads the quant",
+      "tag": "On-hand per SKU",
+      "narration": "Stock Levels is a live read of the Flow quant for this branch's stock location: units on hand, and available (on-hand minus any cart/order reservations), per SKU. Scan a barcode or type a SKU to jump straight to an item. Nothing is stored twice — this screen is the WMS quant, surfaced.",
+      "img": "screenshots/inv-stock-levels.png",
+      "box": { "x": 300, "y": 205, "w": 560, "h": 36 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The catalog links to stock by SKU",
+      "tag": "CatalogBridge: SKU → skuRef",
+      "narration": "How does a catalog Product know its warehouse stock? The CatalogBridge maps each variant's SKU (or, for simple products, the product _id) to a skuRef — the exact same key Flow stores the quant under. So a product and its on-hand are joined by skuRef, not by a fragile foreign key. Search the catalog here; every SKU you see is a live handle into the WMS.",
+      "img": "screenshots/catalog-products.png",
+      "box": { "x": 413, "y": 172, "w": 601, "h": 32 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Stock projection feeds the storefront",
+      "tag": "Event-driven cache, head-office on-hand",
+      "narration": "The public storefront never queries Flow live on every page view. Instead each Product carries a stockProjection cache — head-office on-hand — rebuilt automatically whenever a quant changes: a move commits, a reservation is consumed or released, an adjustment posts, or a PROCUREMENT is RECEIVED. That last one closes the loop: receiving this PO at head office propagates, event-driven, all the way to the online buy-button. Sub-branch stock stays POS-only and never oversells the storefront.",
+      "img": "screenshots/catalog-products.png",
+      "box": { "x": 1099, "y": 94, "w": 123, "h": 28 }
+    }
+  ]
+}
