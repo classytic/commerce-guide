@@ -1,0 +1,58 @@
+{
+  "module": "A/R & A/P Aging",
+  "slug": "ar-ap-aging",
+  "section": "Accounting · Receivables & Payables",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "Aging answers one question a business lives or dies by: who owes us, how much, and how late. But the report is only the surface. Underneath, every open item is a single line on ONE control account (A/R 1141 for customers, A/P 2111 for suppliers), tagged at posting time with the partner it belongs to and the date it falls due. Follow a real invoice from the moment it posts — where the control line is stamped with a partnerId and a maturityDate — through the bucket it lands in, the per-partner sub-ledger it rolls up into, the control account it reconciles against to the paisa, and the payment that finally clears it. Every number here was captured live from the running ledger.",
+  "out": "ar-ap-aging.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Aging is the control account, sliced by lateness",
+      "tag": "A/R 1141 · outstanding by days past due",
+      "narration": "Under Accounting, the Aging report opens on Accounts Receivable — the outstanding balance of the A/R control account (1141), grouped by how overdue each item is. This is not a separate ledger: it is the SAME 1141 balance you see on the trial balance, re-cut by due date. The A/P view is its mirror on account 2111 (what you owe suppliers). One report shape, two control accounts.",
+      "img": "screenshots/aging.png",
+      "box": { "x": 336, "y": 104, "w": 360, "h": 54 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Every open item is a stamped control line",
+      "tag": "post invoice → 1141 line: partnerId + maturityDate",
+      "narration": "When an invoice posts, the ledger bridge writes the A/R leg onto control account 1141 and stamps that exact line with TWO dimensions the aging engine depends on: the customer's partnerId (which partner owes it) and a maturityDate copied from the invoice's due date (when it's owed). Miss either and the item is invisible to aging or lands in the wrong bucket — the classic bug where every past-due invoice wrongly shows as 'Current' because the due date never reached the line. The bucket is pure arithmetic on that stamp: as-of date minus maturityDate.",
+      "img": "screenshots/aging.png",
+      "box": { "x": 312, "y": 210, "w": 918, "h": 84 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Four windows of lateness, one customer",
+      "tag": "Meridian Retail Ltd · ৳41,500 spread Current→90+",
+      "narration": "Meridian Retail Ltd owes ৳41,500 across four invoices, and each lands in a different bucket purely by its due date: ৳12,000 Current (due this cycle), ৳8,500 in 31–60 days, ৳6,000 in 61–90, and ৳15,000 sitting 90+ days overdue — the row that should worry a credit controller. The partner shows by NAME, not a raw ID, because the report resolves each stamped partnerId back to the Customer (A/R) or Supplier (A/P) record.",
+      "img": "screenshots/aging.png",
+      "box": { "x": 312, "y": 486, "w": 918, "h": 78 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Drill into one partner: the subsidiary ledger",
+      "tag": "click partner → statement = 1141 lines WHERE partnerId",
+      "narration": "Clicking the partner opens their statement — the subsidiary ledger. It is every journal line on control account 1141 filtered to this one partnerId, in date order, with a running balance. Feb 7: ৳15,000 invoice → balance ৳15,000. Mar 24: ৳6,000 → ৳21,000. And so on. This is how a single company-wide control account still answers 'what does THIS customer owe?' — the partner dimension on each line is the join key. No separate per-customer accounts to maintain.",
+      "img": "screenshots/statement.png",
+      "box": { "x": 336, "y": 104, "w": 340, "h": 54 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Sub-ledgers reconcile to the control account",
+      "tag": "Σ partner balances = 1141 GL · ৳73,580",
+      "narration": "The statement's CLOSING and OPEN ITEMS both read ৳41,500 — identical to Meridian's row on the aging report. That is the reconciliation guarantee: because every 1141 line carries a partnerId, the sum of ALL partners' subsidiary balances equals the 1141 balance on the trial balance to the paisa (here ৳73,580 total A/R across Meridian + others). One control account, many partner sub-ledgers, always in balance — the definition of a control account done right. A/P works identically against 2111.",
+      "img": "screenshots/statement.png",
+      "box": { "x": 556, "y": 330, "w": 408, "h": 56 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Payment clears the item — on the correct business day",
+      "tag": "record payment → 1141 credit (same partnerId) → item leaves bucket",
+      "narration": "Recording a payment posts the opposite leg: a credit to 1141 tagged with the SAME partnerId, which nets the invoice to zero so it drops out of both the aging bucket and the open-item list. Timing is decided in Dhaka time, not UTC: a ৳12,000 payment landing at 00:21 on Jul 7 clears the Current bucket on Jul 7, and every report — aging AND statement — agrees to the paisa at each as-of date because they share one business-day cutoff. The customer's ৳12,000 Current balance goes to zero the moment the cash is booked, everywhere at once.",
+      "img": "screenshots/aging.png",
+      "box": { "x": 542, "y": 210, "w": 230, "h": 84 }
+    }
+  ]
+}
