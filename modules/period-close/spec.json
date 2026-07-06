@@ -1,0 +1,58 @@
+{
+  "module": "Period Close & Trial Balance",
+  "slug": "period-close",
+  "section": "How it works · Gates → Trial Balance → Lock",
+  "branchContext": "Head Office (HQ-only close)",
+  "lede": "Every guide in this suite ended with a journal entry. This is where they all come due. Month-end close is the control that verifies each resolution actually landed — no draft left unposted, no clearing account left dangling, no sale left uncosted, no shift left open — and then LOCKS the period so the numbers can never silently change afterwards. The close wizard is a fixed checklist of gates, and each gate is one of the modules you have already followed. It is the capstone that proves the whole system reconciles.",
+  "out": "period-close.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Close is a guided checklist, not a button",
+      "tag": "pick period → Start Close → run the gates",
+      "narration": "Closing a month is not a single click. You pick a fiscal period, Start Close, and a wizard walks a fixed sequence of gates that must each pass — or be explicitly skipped with a documented reason — before the period can lock. Skips are logged against the operator. The design principle: a period closed while operational state is still un-pinned (unmatched settlements, open shifts, uncosted sales) is audit-indefensible, so the gates make that state impossible to ignore.",
+      "img": "screenshots/close-wizard.png",
+      "box": { "x": 290, "y": 285, "w": 950, "h": 285 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Gate 1 — no draft journal entries (caught live)",
+      "tag": "the Adjustments draft is blocked here",
+      "narration": "The first gate refuses to close while any DRAFT journal entry sits in the period — and here it FAILS: '1 draft journal entry must be posted or archived before close.' That is the exact stock-adjustment draft from the Adjustments guide: adjustments post as draft on purpose, as un-posted judgement calls. Close is where that deferral comes due — a human must post or archive every draft before the period's P&L is declared final. The loop the Adjustments guide opened closes right here.",
+      "img": "screenshots/close-gate-failed.png",
+      "box": { "x": 290, "y": 388, "w": 950, "h": 100 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Gate 2 — the trial balance must balance",
+      "tag": "Σ debits = Σ credits, snapshot frozen",
+      "narration": "The wizard snapshots the trial balance and verifies total debits equal total credits. Because every posting contract in this suite emits balanced double-entries — GR/IR, COGS, revenue, VAT, transfers, adjustments — this is where a bug in any of them would surface as an out-of-balance figure. The snapshot is frozen and stored as the period's evidence, so the trial balance you closed on is the trial balance auditors see later.",
+      "img": "screenshots/trial-balance.png",
+      "box": { "x": 290, "y": 100, "w": 950, "h": 140 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Gates 3-6 — clearing, settlements, costing, stock",
+      "tag": "1125 · 1126 · 1127 · 2125 must net to zero",
+      "narration": "The next gates sweep the loose ends of the buy/sell flows. Settlement imports must be reconciled. Clearing accounts must net to zero: gateway (1125) and mobile-money (1126) from card/MFS sales, COD clearing (1127), and GR/IR (2125) from the procure-to-pay guide — every 'in-limbo' account, emptied. Costing must have no gaps (the Cost Gaps report from the Valuation guide — no sale shipped without a real cost). And no negative on-hand stock. Each gate is one subsystem's unfinished business, checked before the lock.",
+      "img": "screenshots/close-wizard.png",
+      "box": { "x": 290, "y": 430, "w": 950, "h": 140 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Gates 7-10 — shifts, withholding, Mushak, returns",
+      "tag": "a roll-call of every module in the suite",
+      "narration": "The close then calls the roll of the rest of the system: no POS shift left open (the POS guide's daily-Z must have posted), withholding certificates reconciled (the VDS the Suppliers guide withholds), a Mushak 6.3 tax invoice issued for every fulfilled order (the Sales guide), and no open RMAs (the Returns guide — an unresolved return means COGS-reversal and refund JEs not yet on the books, leaving the period's P&L and inventory materially incomplete). Read top to bottom, the checklist is literally every guide you have followed.",
+      "img": "screenshots/close-wizard-lower.png",
+      "box": { "x": 290, "y": 250, "w": 950, "h": 240 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Close LOCKS the period — late entries rejected",
+      "tag": "PERIOD_LOCKED · numbers frozen forever",
+      "narration": "Once every gate passes, close_period flips the fiscal period to locked and archives the run. From that moment the period-lock guard rejects any new journal entry dated into the closed period (error PERIOD_LOCKED) — nothing can post backwards. That immutability is the entire point: a closed month's trial balance, tax filings and inventory valuation can never silently drift, because the door is shut. Every resolution in this suite exists so that when this gate finally passes, the books are provably complete.",
+      "img": "screenshots/close-wizard-lower.png",
+      "box": { "x": 290, "y": 360, "w": 950, "h": 150 }
+    }
+  ]
+}
