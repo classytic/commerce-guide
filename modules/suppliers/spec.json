@@ -1,0 +1,58 @@
+{
+  "module": "Suppliers",
+  "slug": "suppliers-partner-ledger",
+  "section": "How it works · Master → A/P subsidiary ledger → Payment",
+  "branchContext": "Company-wide (all branches)",
+  "lede": "A supplier is the one purchasing record that is NOT per-branch. Stock is isolated by branch, but WHO you buy from is shared company-wide — one master record every branch raises purchase orders against. That record is also a PARTNER in the accounting subsidiary ledger: every branch's unpaid bill to a vendor threads back to it, aggregating into a single A/P aging that must reconcile to the control account. Follow a supplier from master record to the payment that clears its aging.",
+  "out": "suppliers.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Suppliers are a COMPANY-WIDE master",
+      "tag": "tenantField: false — shared across branches",
+      "narration": "Every vendor is one record, shared across all branches (the supplier model has no organizationId — tenantField: false). Any branch can raise a PO against the same supplier, and they all report against the same partner. This is deliberate: stock, staff and POS are per-branch, but a vendor relationship — terms, credit, tax id — is a company-level fact, so it lives once.",
+      "img": "screenshots/suppliers-list.png",
+      "box": { "x": 760, "y": 228, "w": 300, "h": 112 }
+    },
+    {
+      "action": "CLICK",
+      "title": "The master fields drive the accounting",
+      "tag": "BIN · Payment terms · Credit days",
+      "narration": "Add or edit exposes the fields that later shape every bill. BIN is the vendor's VAT registration id — stamped on bills for Mushak compliance. Payment Terms + Credit days are not cosmetic: they set each future bill's DUE DATE (its A/P maturity) and, with the credit limit, cap how much exposure the supplier may carry. Set these once here; every downstream payable inherits them.",
+      "img": "screenshots/suppliers-form.png",
+      "box": { "x": 385, "y": 195, "w": 470, "h": 180 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "A supplier is a PARTNER in the subsidiary ledger",
+      "tag": "A/P item carries partnerId + maturityDate",
+      "narration": "When a PO is billed (see the procure-to-pay guide's GR/IR step), the A/P control-account item is tagged with partnerId = this supplier and maturityDate = bill date + the terms from step 2. Note the asymmetry: the supplier master is company-wide, but the A/P item is per-branch (orgScoped) — the platform's single ledger with branch as a dimension. The partner tag is what stitches the two scopes together.",
+      "img": "screenshots/suppliers-form.png",
+      "box": { "x": 385, "y": 270, "w": 470, "h": 96 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "One supplier, all branches → one A/P Aging",
+      "tag": "subsidiary ledger reconciles to control 2111",
+      "narration": "Because every branch's open bill to a vendor carries the SAME company-wide partnerId, A/P Aging rolls them all into one view, bucketed by days past due. This is the PARTNER SUBSIDIARY LEDGER — the by-supplier breakdown that must reconcile, to the paisa, against the Accounts Payable control account (2111) on the trial balance. Control account = the total; subsidiary ledger = who that total is owed to. If they disagree, something posted to A/P without a partner.",
+      "img": "screenshots/suppliers-ap-aging.png",
+      "box": { "x": 385, "y": 100, "w": 720, "h": 90 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Domestic vs import forks the withholding",
+      "tag": "Cr 2111 net + Cr 2136 VDS · import → 1150 deferred VAT",
+      "narration": "The supplier's tax profile decides how the bill's credit side splits. A DOMESTIC vendor bill splits A/P: Cr Accounts Payable (2111) for the net, plus Cr VDS Payable (2136) for the VAT you withhold at source and remit to the NBR on the supplier's behalf. An IMPORTER / foreign supplier (country ≠ BD) instead DEFERS input VAT to a customs-clearance account (1150.VAT0.INPUT) until the bill of entry clears. That fiscal position is set once on the master and applied automatically to every bill.",
+      "img": "screenshots/suppliers-ap-aging.png",
+      "box": { "x": 385, "y": 100, "w": 863, "h": 160 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Payment clears per-partner; terms are the guardrail",
+      "tag": "Dr 2111 A/P / Cr Bank, matched to partner",
+      "narration": "Recording a payment against a bill posts Dr Accounts Payable (2111) / Cr Bank, matched to the partner so that supplier's aging drops and the control account falls in step. The credit limit and terms from step 2 are the guardrails on how far a supplier's balance can run before payment. Everything downstream — bills, aging buckets, payment runs, VDS remittance — reconciles back to the one master record you created here.",
+      "img": "screenshots/suppliers-list.png",
+      "box": { "x": 420, "y": 275, "w": 640, "h": 60 }
+    }
+  ]
+}
