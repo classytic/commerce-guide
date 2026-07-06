@@ -1,0 +1,58 @@
+{
+  "module": "Promotions & Coupons",
+  "slug": "promotions-coupons",
+  "section": "How it works · Program → Server eval → Discount → Voucher commit",
+  "branchContext": "Company-wide (promos are shared across branches)",
+  "lede": "A coupon is a promise the SERVER must be able to police. This guide follows a promotion from its rule definition to the moment it discounts a real order — and shows why the math is never trusted to the client. The promo engine evaluates the code against the canonical, server-resolved cart, promotes the result onto the order's totals.discount, and commits the voucher only when the order actually lands. It is the same reserve → commit → rollback lifecycle that manual discounts and loyalty redemption ride — one discount pipeline, three sources.",
+  "out": "promotions.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Promotions are the catalog of offers",
+      "tag": "Automatic programs + coupon codes",
+      "narration": "Every promotion lives here — like BIGBOSS10 (10% off, a Discount Code). Two broad kinds: AUTOMATIC programs that apply themselves when the cart qualifies, and CODE programs that require the customer to enter a coupon. Promotions are company-wide (shared across branches), so the same offer runs online and at every till. Nothing is discounted until an order evaluates against these rules.",
+      "img": "screenshots/promo-list.png",
+      "box": { "x": 290, "y": 258, "w": 432, "h": 60 }
+    },
+    {
+      "action": "CLICK",
+      "title": "The rule decides WHEN and HOW MUCH",
+      "tag": "Trigger · Stacking · Priority · limits",
+      "narration": "A program carries the levers the engine reads: Program type, TRIGGER MODE (automatic vs code-required), STACKING MODE (Exclusive means it won't combine with another promo), PRIORITY (which program wins when several match), and the schedule + usage limits (total redemptions, per-customer caps). These are the constraints the server enforces — the cashier or shopper never decides the discount, the rule does.",
+      "img": "screenshots/promo-form.png",
+      "box": { "x": 385, "y": 95, "w": 863, "h": 250 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The SERVER owns the promo math (anti-tamper)",
+      "tag": "reservePromo evaluates the CANONICAL cart",
+      "narration": "When an order is placed with a code, the server calls the promo engine's evaluate() on the cart lines IT just resolved from the catalog — never on what the client claims the cart is. The client's /promotions/evaluate/preview call is display-only; it drives nothing that mutates state. So a tampered cart-hash or a spoofed discount is impossible by construction: the discount is recomputed server-side, on trusted inputs, at the exact moment of placement.",
+      "img": "screenshots/promo-form.png",
+      "box": { "x": 820, "y": 250, "w": 428, "h": 130 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The discount lands in totals.discount",
+      "tag": "one pipeline: promo + manual + redemption",
+      "narration": "The evaluated discount is promoted onto the order's canonical totals.discount (a Money value), so the kernel re-derives grandTotal = subtotal − discount + tax. Crucially this is the SAME totals.discount field that a cashier's manual discount and a loyalty points redemption feed — one discount pipeline with three sources, composed and capped at subtotal. That is why the shift's revenue JE and every downstream report see one coherent discounted total.",
+      "img": "screenshots/promo-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 96 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Commit on success, rollback on failure",
+      "tag": "voucher integrity · idempotent by evaluationId",
+      "narration": "reservePromo holds the redemption; commitPromo — fired only AFTER the order persists — consumes the voucher: incrementing usage counts and enforcing per-customer caps. If the order insert or the payment hook fails, rollbackPromo releases the reservation so the code stays available. It is idempotent by evaluationId, so a retried placement never double-spends a single-use coupon. This is the identical reserve/commit/rollback lifecycle the loyalty redemption now follows.",
+      "img": "screenshots/promo-list.png",
+      "box": { "x": 290, "y": 258, "w": 432, "h": 60 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The discount books against revenue",
+      "tag": "net Revenue 4111 (or contra 4115) — true collected",
+      "narration": "In the ledger the promo discount reduces recognised revenue — netted into Sales Revenue (4111), or posted as a Sales Discount (4115) contra-revenue line so gross sales stay visible. Either way the sale's revenue entry reflects the amount actually collected, on the same books the Sales and POS guides post to. Finance can then read gross sales, discounts given, and net revenue side by side — and reconcile promo cost against the campaigns defined back on the promotions list.",
+      "img": "screenshots/promo-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 144 }
+    }
+  ]
+}
