@@ -1,0 +1,58 @@
+{
+  "module": "Stock Adjustments & Cycle Count",
+  "slug": "stock-adjustments",
+  "section": "How it works · Count → Variance → Draft JE",
+  "branchContext": "Any branch (per-branch adjustment location)",
+  "lede": "Procurement adds stock, sales remove it, transfers move it — yet the physical shelf still drifts from the system through theft, breakage and miscounts. Stock Audit is the CORRECTION leg that closes that gap. It reconciles counted-against-system, and every variance resolves into a Flow move to the adjustment location AND a journal entry. But uniquely, that JE lands as a DRAFT — because writing inventory value off the balance sheet is a decision a human must approve, not an automatic post.",
+  "out": "stock-adjustments.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Three depths of count",
+      "tag": "Spot Check · Cycle Count · Full Count",
+      "narration": "Stock Audit offers three count scopes: Spot Check (a handful of SKUs), Cycle Count (a rotating subset so the whole catalogue is counted over time without ever closing the store), and Full Count (everything, for year-end). Each opens a count session (CNT-…) that freezes the system's expected on-hand at that moment and gives you a sheet to enter the physical count against.",
+      "img": "screenshots/audit-list.png",
+      "box": { "x": 755, "y": 168, "w": 370, "h": 50 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "A count reconciles against the live quant",
+      "tag": "expected = Flow quant · counted = reality",
+      "narration": "The expected column is the live Flow quant — the exact on-hand number Stock Levels shows. You enter what you physically counted; the difference is the variance. If counted equals expected, nothing posts — a clean count is a no-op. Only a variance triggers the resolution below, so the ledger is never touched for stock that was already correct.",
+      "img": "screenshots/stock-levels.png",
+      "box": { "x": 280, "y": 150, "w": 620, "h": 100 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Variance resolves INVENTORY via the adjustment location",
+      "tag": "Flow move: stock loc ↔ ADJUSTMENT loc",
+      "narration": "A shortfall runs a Flow move from the stock location into the ADJUSTMENT location — the fourth virtual location every branch is provisioned with, exactly for this. An overage moves the other way. Either way the quant is corrected to match the physical count. Unlike a sale, the goods don't go to a customer; they leave (or arrive) through the adjustment sink, which is what keeps every stock change a clean, auditable double-entry of location.",
+      "img": "screenshots/audit-list.png",
+      "box": { "x": 280, "y": 232, "w": 520, "h": 210 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "...and resolves the LEDGER by direction",
+      "tag": "loss: Dr 6711 / Cr 1164 · gain: Dr 1164 / Cr 4317",
+      "narration": "The direction of the variance picks the journal entry. A LOSS (shrinkage, theft, breakage) posts Dr Inventory Shrinkage (6711, a P&L expense) / Cr Merchandise (1164) — shown here, a BDT 100,000 damaged write-off. A GAIN (found stock, provision write-back) posts Dr Merchandise (1164) / Cr Inventory Gain — Other Income (4317). A gain must NEVER credit 6711 to 'reverse' shrinkage: crediting an expense account gives it a negative balance and silently inflates net income. Loss is an expense; gain is other income — two different accounts on purpose.",
+      "img": "screenshots/adjustment-je-detail.png",
+      "box": { "x": 320, "y": 458, "w": 540, "h": 100 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The adjustment JE posts as a DRAFT for review",
+      "tag": "autoPost: false — the write-off control",
+      "narration": "Look at the state: draft. This is the defining difference from every other flow in this suite. A receipt or a sale AUTO-posts; a stock adjustment does NOT. Writing value off the balance sheet is a judgement call, so the entry is created in draft with its variance and reason, and finance reviews and posts it deliberately. That single design choice is the control that stops a fat-fingered count from silently vaporising inventory value.",
+      "img": "screenshots/adjustment-journal.png",
+      "box": { "x": 280, "y": 300, "w": 900, "h": 48 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Posted variances flow to shrinkage KPI + valuation",
+      "tag": "6711 shrinkage rate · re-valued quant · HO projection",
+      "narration": "Once posted, account 6711 accumulates your shrinkage rate — a real KPI finance watches on the P&L — and the corrected quant re-values inventory at its cost layers. If the count was at head office, the corrected on-hand also re-syncs the storefront projection so the online buy-button reflects reality. A count is not bookkeeping hygiene; it keeps stock valuation, COGS margins, and the public storefront all honest against the physical shelf.",
+      "img": "screenshots/adjustment-je-detail.png",
+      "box": { "x": 320, "y": 458, "w": 540, "h": 160 }
+    }
+  ]
+}
