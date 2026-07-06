@@ -1,0 +1,58 @@
+{
+  "module": "Sales Orders",
+  "slug": "sales-orders",
+  "section": "How it works · Order → Inventory-out → Ledger",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "The mirror image of procure-to-pay. A sales order is a customer's intent to buy; placing it only RESERVES stock. Fulfilment is the resolution — it moves inventory OUT, consumes cost layers into COGS, and books revenue, output VAT, and a receivable in one stroke. Follow an order from placed to delivered and watch six ledger effects fall out of a single fulfil action.",
+  "out": "sales-orders.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Orders is the sell-side lifecycle",
+      "tag": "Placed → Paid → Shipped → Delivered",
+      "narration": "Every customer order for the active branch, with its payment and fulfilment status. Placing an order does NOT move stock or post revenue — it records intent and RESERVES the units. Reservation is a soft hold: available on-hand drops, but nothing has physically left and nothing has hit the ledger. Cart abandonment releases the hold (and re-syncs the storefront projection).",
+      "img": "screenshots/orders-list.png",
+      "box": { "x": 430, "y": 198, "w": 491, "h": 32 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Open the order — Payment, Delivery, Shipping",
+      "tag": "Lifecycle tabs",
+      "narration": "The detail sheet splits the order into its lifecycle: Payment (was it collected — prepaid, or COD to reconcile later), Delivery/Shipping (how it leaves), and the line items + totals. Each transition here is a trigger that resolves into stock and the ledger — the buttons are the least of it.",
+      "img": "screenshots/order-detail.png",
+      "box": { "x": 615, "y": 103, "w": 74, "h": 37 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Ship / fulfil the order",
+      "tag": "The resolution trigger",
+      "narration": "Ship Order is the moment intent becomes a transaction. It is one click, but it fires the two resolutions below — inventory and ledger — atomically, so stock and books can never disagree about a sale.",
+      "img": "screenshots/order-detail.png",
+      "box": { "x": 385, "y": 150, "w": 110, "h": 28 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Fulfilment resolves INVENTORY out",
+      "tag": "stock loc → customer loc; cost layers → COGS",
+      "narration": "Flow runs a move from the STOCK location to the CUSTOMER (virtual) location: the quant decrements, the earlier reservation is CONSUMED, and the specific COST LAYERS the units draw from (FIFO/AVCO) are what set the cost of the sale. This is why receiving opened cost layers — selling closes them. Available and on-hand both drop; the storefront projection re-syncs.",
+      "img": "screenshots/sales-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 48 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Fulfilment resolves the LEDGER",
+      "tag": "Dr COGS 5111 / Cr Inventory · Dr A/R 1141 / Cr Revenue 4111 + Output VAT 2132",
+      "narration": "Two postings land here. At COST: Dr COGS (5111) / Cr Inventory (1164) — the value leaves the balance sheet. At PRICE: Dr Accounts Receivable (1141) — or Cash for a paid/POS sale — / Cr Sales Revenue (4111) + Cr Output VAT (2132). Inventory leaves at cost, revenue books at price; the gap is your gross margin, computed from the exact cost layers consumed above.",
+      "img": "screenshots/sales-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 96 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Revenue flows to VAT + receivables",
+      "tag": "Mushak 6.3 invoice · 9.1 return · A/R aging",
+      "narration": "The output VAT credited to 2132 is the same figure that rolls into the Mushak 9.1 monthly VAT return, and a Mushak 6.3 tax invoice is auto-generated on fulfilment. The A/R debit sits on A/R Aging with its due date until the customer pays (Dr Cash / Cr A/R). One fulfil action therefore resolves into six connected effects — stock out, reservation consumed, COGS, revenue, output VAT, and a receivable — every one traceable to this order.",
+      "img": "screenshots/sales-journals.png",
+      "box": { "x": 280, "y": 300, "w": 770, "h": 144 }
+    }
+  ]
+}
