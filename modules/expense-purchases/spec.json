@@ -1,0 +1,50 @@
+{
+  "module": "Expense & Non-Inventory Purchases",
+  "slug": "expense-purchases",
+  "section": "Accounting · Purchasing",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "Not every purchase is stock. Event printing, a booked hall, legal fees, office utensils — these never touch inventory; they hit an expense (or asset) account and Accounts Payable. The catch: the person entering the bill is rarely an accountant and shouldn't have to know that \"posters\" means GL 6301. So the system derives the account from the plain description — a rule engine, not a lookup table — books it correctly, and routes big spends through an approval chain. Follow a real expense bill from a typed sentence to a balanced journal entry, and see where inventory is deliberately NOT involved. Every number here was captured from the live ledger.",
+  "out": "expense-purchases.html",
+  "steps": [
+    {
+      "action": "RESOLVE",
+      "title": "Two purchase paths — only one touches stock",
+      "tag": "procurement → inventory · vendor bill → expense/asset",
+      "narration": "A commerce ERP has two front doors for money going out. PROCUREMENT (goods received) flows through the WMS: Dr Inventory / Cr GR-IR, then the bill clears GR-IR against A/P — stock rises, valuation moves. A VENDOR BILL for a service or consumable takes the OTHER door: straight to an expense or asset account, Cr A/P, with the inventory engine never called. Picking the right door is the first decision — this guide is the second door, the one most ERPs make painfully manual.",
+      "img": "screenshots/derive.png",
+      "box": { "x": 312, "y": 195, "w": 620, "h": 48 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Type a sentence — the account derives itself",
+      "tag": "description → keywords → rule → account",
+      "narration": "The operator types \"Event poster and banner printing\" and leaves the account blank. Under the field, in green: Auto → 6301 Printing & Stationery. No GL code was typed. The description is tokenized to keywords (poster, banner, printing), matched against a declarative rule set, and the winning rule's account is previewed live. Line two — \"Hall booking and catering for annual event\" — resolves to 6803 Entertainment / Hospitality by the same path. The preview is not a guess: the server applies the SAME resolver at post time.",
+      "img": "screenshots/derive.png",
+      "box": { "x": 576, "y": 265, "w": 340, "h": 128 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "A rule engine, not Odoo's fixed hierarchy",
+      "tag": "@classytic/ledger AccountResolver · priority + reason",
+      "narration": "Odoo derives an account from a rigid chain: product → category → company default. We use a RULE ENGINE instead. A rule is `{ when, use, priority }` — a JSON predicate (the same condition DSL the approval policies use) over the line's context, the account to use, and a priority so a specific keyword (\"facebook\" → Digital Marketing 6402) beats a broad one (\"campaign\" → Advertisement 6401). BD defaults ship in @classytic/ledger-bd; a deployment layers its own higher-priority rules WITHOUT a code change. Every resolution returns a traceable reason — an auditor can ask \"why 6301?\" and get an answer.",
+      "img": "screenshots/derive.png",
+      "box": { "x": 576, "y": 300, "w": 340, "h": 22 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The books: Dr specific expense / Cr A/P, zero inventory",
+      "tag": "BILL-2026 · 6301+6803+6309 → 2111",
+      "narration": "On a real posting captured here — three lines, no codes typed — the journal entry lands exactly right: Dr 6301 Printing ৳4,000, Dr 6803 Entertainment ৳18,000, Dr 6309 Legal & Professional ৳6,000, all against Cr 2111 Accounts Payable ৳28,000. Each expense line carries its OWN account; the credit consolidates to A/P. No 11xx inventory account appears — the invoice engine never calls the WMS. An explicit account on any line overrides the resolver entirely: the accountant's escape hatch is always there.",
+      "img": "screenshots/derive.png",
+      "box": { "x": 312, "y": 265, "w": 258, "h": 128 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Big spends route through approval — by policy, not code",
+      "tag": "amount ≥ ৳50k → branch manager → post",
+      "narration": "Spending controls are data. An ApprovalPolicy — subjectType invoice, condition amount ≥ ৳50,000 AND moveType in_invoice — attaches a chain (branch manager) the moment such a bill is submitted. A ৳18,000 event bill posts straight through; a ৳90,000 retainer goes to pending_approval until the manager decides, then posts (here BILL-2026-00016). The chain math lives in @classytic/primitives/approval; arc-approval is the HTTP surface; the policy is editable by finance with an audit trail — no deploy to change a threshold.",
+      "img": "screenshots/derive.png",
+      "box": { "x": 312, "y": 155, "w": 900, "h": 40 }
+    }
+  ]
+}
