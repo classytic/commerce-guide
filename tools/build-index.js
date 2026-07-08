@@ -20,7 +20,7 @@ const CATEGORIES = [
     id: "sell",
     title: "Sell — POS, Orders & Growth",
     blurb: "Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.",
-    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points"],
+    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points", "pricelist-rules"],
   },
   {
     id: "buy",
@@ -45,7 +45,7 @@ const CATEGORIES = [
     id: "books",
     title: "Books — Accounting & Tax",
     blurb: "The single company-wide ledger: chart of accounts, receivables/payables aging, VAT + withholding, and closing the period.",
-    slugs: ["accounting-chart-of-accounts", "ar-ap-aging", "invoice-tax-withholding", "period-close"],
+    slugs: ["accounting-chart-of-accounts", "transactions-cashbook", "ar-ap-aging", "invoice-tax-withholding", "period-close"],
   },
 ];
 

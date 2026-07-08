@@ -1,0 +1,50 @@
+{
+  "module": "Price Lists & Rules",
+  "slug": "pricelist-rules",
+  "section": "How it works · Segment → Rule → Resolved price",
+  "branchContext": "Company-wide (catalog pricing)",
+  "lede": "One catalog, many prices. A PRICE LIST is a named set of rules that reprices products for a customer segment — wholesale buyers, a specific channel, or volume orders — without cloning the catalog. Each rule carries a SCOPE (all / category / product / variant), a COMPUTATION (fixed price, % discount, or formula), a minimum-quantity gate, and a priority. At order time the pricing bridge finds every rule that matches the line, sorts them deterministically, and applies the winner. Captured live: a wholesale list that takes 15% off any product when the customer buys 5 or more.",
+  "out": "pricelist-rules.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Price Lists — B2B / wholesale pricing for segments",
+      "tag": "Lists · Active · Rules",
+      "narration": "Price Lists (under Commerce) is where segment pricing lives — 'B2B/wholesale pricing rules for customer segments.' The stat cards track how many lists exist, how many are active, and the total rule count across them. A list is NOT a second catalog: it's a thin overlay of rules that reprice the same products for whoever the list is assigned to. New Price List starts one.",
+      "img": "screenshots/pl-screen.png",
+      "box": { "x": 1082, "y": 100, "w": 142, "h": 34 }
+    },
+    {
+      "action": "TYPE",
+      "title": "Name it, scope the channel & currency",
+      "tag": "Channel (all / one) · Currency · Active / Default",
+      "narration": "Give the list a clear name (here 'Wholesale — Dinnerware 15% off (min 5)'). CHANNEL optionally binds it to one sales channel — leave empty to apply across all. CURRENCY is the ISO code the rule prices are quoted in. Two switches: ACTIVE makes it selectable, DEFAULT makes it the fallback list for its channel. The rules themselves come next.",
+      "img": "screenshots/pl-form.png",
+      "box": { "x": 384, "y": 158, "w": 858, "h": 96 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Add a rule — scope, computation, quantity gate",
+      "tag": "Scope · Computation · Min Qty · Priority (highest first)",
+      "narration": "Add Rule opens one rule row. SCOPE decides what it targets — All Products, a Category, a single Product, or a Variant (narrower scope wins ties). COMPUTATION is how the price is set: a Fixed Price (paisa), a % Discount off the base, or a Formula. MIN QTY is a volume gate — the rule only fires at or above that quantity. PRIORITY breaks ties, highest first. Add several rules to build a ladder (e.g. 10% at 5, 15% at 20).",
+      "img": "screenshots/pl-rule.png",
+      "box": { "x": 396, "y": 240, "w": 402, "h": 230 }
+    },
+    {
+      "action": "TYPE",
+      "title": "15% off for orders of 5 or more",
+      "tag": "% Discount 15 · Min Qty 5",
+      "narration": "This rule: Scope All Products, Computation % Discount, Discount % = 15, Min Qty = 5, Priority 10. Read it as 'any product, 15% off, once the line quantity reaches 5.' A percentage rule floats with the base price; a fixed rule pins an exact figure; a formula computes off another list. Save with Create Price List.",
+      "img": "screenshots/pl-rule-filled.png",
+      "box": { "x": 396, "y": 353, "w": 336, "h": 78 }
+    },
+    {
+      "action": "RESULT",
+      "title": "Live — assigned to a customer, resolved at order time",
+      "tag": "customer.priceListId → PricingBridge → repriced line",
+      "narration": "The list is Active with 1 rule. To use it, assign it to a customer (their `priceListId`) — B2B buyers, a wholesale account. When that customer's order is priced, the PricingBridge gathers every rule whose scope + min-quantity match the line, sorts them (narrowest scope → highest min-qty → highest priority), and applies the winner's computation to the base price. One catalog, the right price for each segment — no duplicate products, no manual overrides.",
+      "img": "screenshots/pl-created.png",
+      "box": { "x": 310, "y": 305, "w": 915, "h": 46 }
+    }
+  ]
+}

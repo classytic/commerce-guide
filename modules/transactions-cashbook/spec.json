@@ -1,0 +1,50 @@
+{
+  "module": "Transactions & Spend / Receive",
+  "slug": "transactions-cashbook",
+  "section": "How it works · Money in/out → balanced journal entry",
+  "branchContext": "Any branch",
+  "lede": "Two ledgers sit behind every rial: the TRANSACTIONS cashbook (operational money in/out — orders, POS, refunds) and the double-entry GENERAL LEDGER (journal entries). Most postings are automatic — an order or POS sale creates a transaction AND posts its journal entry through a bridge. But for ad-hoc money — pay the rent, receive a capital injection — the 'Spend / Receive Money' quick entry lets a non-accountant post a balanced journal entry in two clicks, no debits and credits to figure out. Captured live: a shop-rent payment → a posted, balanced Dr expense / Cr cash entry.",
+  "out": "transactions-cashbook.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "The Transactions cashbook — money in and out",
+      "tag": "Inflow / Outflow · Spend / Receive Money",
+      "narration": "Accounting → Transactions is the operational cashbook: every payment the system records — order prepayments, POS tenders, refunds, manual entries — as an INFLOW or OUTFLOW row with amount, status and date. It is the money-movement view, filterable by flow and method (the Finance Overview rolls these same records into income / expense / net). To record ad-hoc money that no order or sale generated, use the 'Spend / Receive Money' button.",
+      "img": "screenshots/txn-ledger.png",
+      "box": { "x": 884, "y": 92, "w": 186, "h": 33 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Spend / Receive Money — no debits/credits to figure out",
+      "tag": "Odoo/Xero quick cash entry",
+      "narration": "This is the Odoo/Xero-style quick cash entry. Pick a DIRECTION — Spend (money out) or Receive (money in) — and the dialog builds the double-entry for you. Spend debits an expense and credits your cash/bank; Receive debits cash/bank and credits an income account. The subtitle says it plainly: 'Posts a balanced journal entry automatically.' A non-accountant never touches debits or credits.",
+      "img": "screenshots/txn-spend-dialog.png",
+      "box": { "x": 419, "y": 117, "w": 425, "h": 40 }
+    },
+    {
+      "action": "TYPE",
+      "title": "Amount, the cash account, and a category",
+      "tag": "Paid from (cash 111x) · Expense category (5x/6x)",
+      "narration": "Key the amount and date, pick which cash/bank account the money left (the 'Paid from' picker lists accounts flagged as cash or numbered 111x/112x — Petty Cash, Bank, Mobile Money), then the expense category — an expense account in the 5xxx/6xxx range (Shop Rent, Utilities, Marketing…). Receive mode swaps the category picker to income accounts (4xxx). A short description rounds out the audit trail.",
+      "img": "screenshots/txn-spend-filled.png",
+      "box": { "x": 419, "y": 238, "w": 425, "h": 110 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Post → a balanced journal entry, immediately",
+      "tag": "Dr 6408 Shop Rent / Cr 1111 Cash · Balanced",
+      "narration": "Post Payment runs the journal-entry create + post pipeline — no bespoke backend — and the entry is POSTED, not left in draft. For this Spend it books Dr 6408 Showroom / Shop Rent 25,000 / Cr 1111 Cash in Hand 25,000: expense recognised, cash reduced, Total Debit = Total Credit, Balanced. (Receive would be the mirror: Dr cash / Cr the income account.) Idempotent and reversible like any GL entry.",
+      "img": "screenshots/txn-je.png",
+      "box": { "x": 310, "y": 376, "w": 915, "h": 98 }
+    },
+    {
+      "action": "RESULT",
+      "title": "Two ledgers, one truth — where each posting lands",
+      "tag": "GL (Journal Entries) = P&L source · cashbook = order/POS flow",
+      "narration": "Know which ledger you're reading. The GENERAL LEDGER (Accounting → Journal Entries) is the double-entry source of truth: the Spend/Receive entry, plus every order / POS / purchase posting, lands here and drives the Trial Balance and P&L via account balances. The TRANSACTIONS cashbook + Finance Overview aggregate the revenue-transaction records that orders and POS create — so a manual Spend that posts a JE directly shows in Journal Entries and the P&L, but not as a cashbook 'transaction' row. Two views, reconciled through the same chart of accounts.",
+      "img": "screenshots/txn-finance.png",
+      "box": { "x": 318, "y": 350, "w": 900, "h": 92 }
+    }
+  ]
+}

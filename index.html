@@ -14,15 +14,15 @@
       <h1>Learn the platform, one flow at a time.</h1>
       <p class="lede">Click-by-click visual walkthroughs of the admin dashboard, captured live from the running app. Each guide traces one business flow end to end — what to click, what the system does underneath, and which journals it books.</p>
       <div class="meta-row">
-        <span class="chip"><b>18</b> guides</span>
-        <span class="chip"><b>116</b> annotated steps</span>
+        <span class="chip"><b>20</b> guides</span>
+        <span class="chip"><b>126</b> annotated steps</span>
         <span class="chip"><span class="ring"></span> callout = where to click</span>
         <span class="chip"><b>EN</b> · translation-ready</span>
       </div>
     </header>
 
     <section class="cat" id="sell">
-      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">5 guides</span></div>
+      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">6 guides</span></div>
       <p class="cat-blurb">Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.</p>
       <div class="grid">
 
@@ -86,6 +86,19 @@
             <p>Loyalty is a two-way ledger of trust: customers EARN points on what they buy and REDEEM them for discounts — and both sides resolve into the same order pipeline and the same books. Follow a point from the rule that mints it, through the tier it qualifies, to the till where it's redeemed — where the SERVER (never the client) reserves the points, turns them into a discount, and confirms the spend only when the sale actually lands. Every number here was captured from a real redemption.</p>
             <div class="card-meta">
               <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/pricelist-rules/pricelist-rules.html">
+          <div class="thumb"><img src="modules/pricelist-rules/screenshots/pl-screen.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Segment → Rule → Resolved price</p>
+            <h3>Price Lists &amp; Rules</h3>
+            <p>One catalog, many prices. A PRICE LIST is a named set of rules that reprices products for a customer segment — wholesale buyers, a specific channel, or volume orders — without cloning the catalog. Each rule carries a SCOPE (all / category / product / variant), a COMPUTATION (fixed price, % discount, or formula), a minimum-quantity gate, and a priority. At order time the pricing bridge finds every rule that matches the line, sorts them deterministically, and applies the winner. Captured live: a wholesale list that takes 15% off any product when the customer buys 5 or more.</p>
+            <div class="card-meta">
+              <span class="steps-pill">5</span> steps
               <span class="open">Open guide →</span>
             </div>
           </div>
@@ -225,7 +238,7 @@
     </section>
 
     <section class="cat" id="books">
-      <div class="cat-head"><h2>Books — Accounting &amp; Tax</h2><span class="count">4 guides</span></div>
+      <div class="cat-head"><h2>Books — Accounting &amp; Tax</h2><span class="count">5 guides</span></div>
       <p class="cat-blurb">The single company-wide ledger: chart of accounts, receivables/payables aging, VAT + withholding, and closing the period.</p>
       <div class="grid">
 
@@ -237,6 +250,19 @@
             <p>The company-wide ledger that every branch posts against. Open it, find any account, seed the standard BFRS chart, and link a new account — all from one screen.</p>
             <div class="card-meta">
               <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/transactions-cashbook/transactions-cashbook.html">
+          <div class="thumb"><img src="modules/transactions-cashbook/screenshots/txn-ledger.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Money in/out → balanced journal entry</p>
+            <h3>Transactions &amp; Spend / Receive</h3>
+            <p>Two ledgers sit behind every rial: the TRANSACTIONS cashbook (operational money in/out — orders, POS, refunds) and the double-entry GENERAL LEDGER (journal entries). Most postings are automatic — an order or POS sale creates a transaction AND posts its journal entry through a bridge. But for ad-hoc money — pay the rent, receive a capital injection — the 'Spend / Receive Money' quick entry lets a non-accountant post a balanced journal entry in two clicks, no debits and credits to figure out. Captured live: a shop-rent payment → a posted, balanced Dr expense / Cr cash entry.</p>
+            <div class="card-meta">
+              <span class="steps-pill">5</span> steps
               <span class="open">Open guide →</span>
             </div>
           </div>
@@ -285,7 +311,7 @@
 
     <footer class="foot">
       <p><span class="mono">How these are made</span>Every guide is a single self-contained HTML file built from live screenshots (<code>tools/build-doc.js</code>). Narration lines are tagged for translation, so the same steps can drive Bangla (or any locale) voiceover video renders.</p>
-      <span class="badge">commerce-guides · 18 modules · 116 steps</span>
+      <span class="badge">commerce-guides · 20 modules · 126 steps</span>
     </footer>
   </div>
 </body>
