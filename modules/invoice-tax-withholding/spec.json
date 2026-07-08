@@ -1,0 +1,82 @@
+{
+  "module": "Invoice Tax & Withholding",
+  "slug": "invoice-tax-withholding",
+  "section": "Accounting · Tax",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "One vendor bill, followed from a typed line to a balanced journal entry — through the part most ERPs get wrong. Bangladesh tax is not one number: a bill carries VAT (and Supplementary Duty) that must each post to their OWN ledger head, because the NBR reads them off separate Mushak grids. And the buyer must DEDUCT tax at source — TDS on the base value, VDS on the VAT — pay the supplier the remainder, and remit the withheld slice to the NBR. Get any of it wrong and the books lie: the document subledger disagrees with the general ledger, or you claim an input credit you may not. This guide traces a real ৳100,000 contractor bill (BILL-2026-00017) where the operator types nothing about tax accounts and nothing about withholding — the supplier's profile and the country tax pack do it all — and lands on Balance Due ৳102,500. Every number here was captured from the live ledger.",
+  "out": "invoice-tax-withholding.html",
+  "steps": [
+    {
+      "action": "RESOLVE",
+      "title": "Three tax surfaces, not one — and only the pipeline knows the difference",
+      "tag": "output VAT/SD · input VAT · withholding TDS/VDS",
+      "narration": "Tax on a document is three separate things wearing one word. OUTPUT tax (on a sale) is a liability — VAT and SD we collected and owe the NBR. INPUT tax (on a purchase) is sometimes a claimable asset, sometimes just cost. WITHHOLDING (deducted at source) runs the OTHER way entirely: money we hold back from the SUPPLIER and remit to the NBR on their behalf — the two 'Less:' lines here. A single-rate 'tax = one lump to one account' model, which most invoicing engines ship, cannot represent this. Our pipeline treats each as its own posting, resolved by a country tax pack — so swapping Bangladesh for the US turns VAT+SD into state+local without touching the invoice engine.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 283, "w": 292, "h": 36 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The line carries a tax CLASS, not a rate — the pack computes the split",
+      "tag": "taxClass STANDARD → computeLine → VAT 15% = ৳15,000",
+      "narration": "The operator sets one thing on the line: a tax class (STANDARD), the same country-neutral token whether the deployment is BD, US, or CA. At post the invoice engine calls the active tax pack's computeLine(STANDARD) — never branching on country. For Bangladesh that returns a BREAKDOWN: VAT 15% on the ৳100,000 net = ৳15,000, plus Supplementary Duty if the goods are SD-liable, each a component with its own GL head. The engine persists that breakdown onto the line (line.taxes[]) rather than collapsing it to a single figure — which is exactly what lets the document and the ledger show each tax separately. Note the line's own Tax cell: ৳15,000.00 (15%), the class resolved to its rate.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 916, "y": 128, "w": 120, "h": 52 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The document shows each tax on its own line — Mushak-shaped, not a lump",
+      "tag": "Subtotal ৳100,000 · VAT (15%) ৳15,000 · Total ৳115,000",
+      "narration": "The summary reads Subtotal ৳100,000, then VAT (15%) ৳15,000 as its OWN row (SD would sit beside it), then Total ৳115,000 GROSS. This is not cosmetic: the NBR's Mushak 9.1 return has separate grids for VAT and SD, and a business that shows one 'Tax' number cannot file. The rows come straight from the persisted line.taxes[] breakdown — the frontend aggregates by code across all lines, so a five-line bill still shows one clean VAT row and one SD row. (Surfacing this split was a fix made while recording this guide: the document had been collapsing every tax to a single line.)",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 210, "w": 292, "h": 62 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Withholding is computed from the SUPPLIER — nothing typed on the bill",
+      "tag": "supplier profile → computeWithholding → TDS ৳5,000 + VDS ৳7,500",
+      "narration": "The operator never enters a withholding amount. The supplier record carries the profile: TDS payee category (COMPANY) + payment type (SUPPLY_GOODS), and a VDS flag with its rate (50%). At post, for vendor bills only, the engine reads that profile and calls the SAME country pack's computeWithholding: TDS is 5% of the ৳100,000 base = ৳5,000 (income tax, ITA 2023 s89 — see the label 'Tax Deducted at Source (s89)'), and VDS is 50% of the ৳15,000 VAT = ৳7,500 (VAT deducted at source, Mushak 6.6). Both come back with their GL heads attached — TDS→2135, VDS→2136. An explicit override on a line still wins; the auto-compute only fills a blank.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 285, "w": 292, "h": 34 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The document nets the payable — gross total, withheld shown, net due",
+      "tag": "Total ৳115,000 · Less TDS (৳5,000) · Less VDS (৳7,500) · Due ৳102,500",
+      "narration": "Below the gross total the summary subtracts each withholding — Less: Tax Deducted at Source (৳5,000), Less: VAT Deducted at Source (৳7,500) — and lands on Balance Due ৳102,500. The Total STAYS gross (৳115,000) for display and NBR filing; the amount actually payable to the supplier is net, because the ৳12,500 withheld never reaches them — we remit it to the NBR. This is the single most important correctness property on the page: the number the supplier is paid equals the number the ledger owes them.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 262, "w": 292, "h": 96 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The journal behind it: AP netted, each tax + each withholding on its own head",
+      "tag": "Dr expense ৳100k + input VAT ৳15k / Cr AP ৳102.5k + TDS 2135 + VDS 2136",
+      "narration": "This document is the front of a journal entry (PURCHASES/2026/07/0005) that reconciles to the paisa. DEBITS: the expense line ৳100,000, plus claimable input VAT ৳15,000 to its receivable head. CREDITS: Accounts Payable 2111 for ৳102,500 — the total NET of withholding — plus TDS Payable 2135 ৳5,000 and VDS Payable 2136 ৳7,500, the two liabilities we now owe the NBR. Debits equal credits at ৳115,000. Nothing is coerced onto a default 'tax' account: VAT posts to its own head, each withholding to its statutory head, because the ledger bridge resolves every component through the pack's accountFor rather than lumping.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 210, "w": 292, "h": 148 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "accountFor null means FOLD INTO COST — never a phantom credit",
+      "tag": "non-claimable input tax → capitalized, not a receivable asset",
+      "narration": "A subtle correctness rule lives in that bridge. When the pack's accountFor returns null for an input-side component — Bangladesh input SD, or any US purchase sales tax — that means 'no separate posting; this tax is not reclaimable, capitalize it.' The bridge honours it by FOLDING the amount into its own expense line's debit instead of parking it on a VAT-receivable account. Coercing null to a default receivable would book an input-credit asset the business may not legally claim — a Mushak 9.1 rebate overclaim waiting for an auditor. Here the STANDARD-rate input VAT IS claimable, so it posts to the receivable head; a non-claimable component would instead vanish into the ৳100,000 expense line.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 210, "w": 292, "h": 30 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Paying the net settles the bill — status flips to Paid",
+      "tag": "pay ৳102,500 → amountDue 0 → paid (not ৳12,500 stuck forever)",
+      "narration": "Because amountDue (Balance Due ৳102,500) is net of withholding, paying the supplier their ৳102,500 drives the balance to zero and the bill to PAID. The naive alternative — settlement measured against the gross ৳115,000 — would leave ৳12,500 'due' permanently after the correct cash went out, and the document subledger would disagree with the general ledger by exactly the withheld amount forever. Payment status is measured against a settleableTotal that already subtracts withholding, at every write path (the model hook, the post claim, and the payment recompute), so there is no seam where the two can drift.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 334, "w": 292, "h": 26 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Country-agnostic by construction — swap BD for US, same pipeline",
+      "tag": "COUNTRY_PACK · BD VAT/SD/TDS/VDS ↔ US state+local+1099",
+      "narration": "None of the invoice engine, the ledger bridge, or this document knows it is Bangladeshi. They speak to a tax-core contract — computeLine, computeWithholding, accountFor — that a jurisdiction pack implements. Flip COUNTRY_PACK to US and the same computeLine that returned this 'VAT (15%)' row returns STATE + LOCAL sales-tax rows; the same computeWithholding that returned TDS + VDS returns §3406 1099 backup withholding; the same document renders it all with zero code change. The Bangladesh specifics — 15% VAT, accounts 2135/2136, the Mushak grids — live entirely in @classytic/bd-tax, replaceable in one config flip.",
+      "img": "screenshots/invoice-doc.png",
+      "box": { "x": 818, "y": 231, "w": 200, "h": 18 }
+    }
+  ]
+}

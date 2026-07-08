@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BigBoss Commerce — Operator Guides</title>
+<meta name="description" content="Click-by-click visual walkthroughs of the BigBoss Commerce admin dashboard — POS, orders, purchasing, inventory, warehouse, accounting and tax." />
+<link rel="stylesheet" href="assets/site.css" />
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guides</p>
+      <h1>Learn the platform, one flow at a time.</h1>
+      <p class="lede">Click-by-click visual walkthroughs of the admin dashboard, captured live from the running app. Each guide traces one business flow end to end — what to click, what the system does underneath, and which journals it books.</p>
+      <div class="meta-row">
+        <span class="chip"><b>18</b> guides</span>
+        <span class="chip"><b>113</b> annotated steps</span>
+        <span class="chip"><span class="ring"></span> callout = where to click</span>
+        <span class="chip"><b>EN</b> · translation-ready</span>
+      </div>
+    </header>
+
+    <section class="cat" id="sell">
+      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">5 guides</span></div>
+      <p class="cat-blurb">Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/pos/pos.html">
+          <div class="thumb"><img src="modules/pos/screenshots/pos-terminal.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Scan → Shift → Daily-Z posting</p>
+            <h3>POS Register</h3>
+            <p>POS resolves inventory and the ledger the same way ecom Sales Orders do — with one decisive difference: TIMING. A store rings hundreds of small cash and card sales a day; a journal entry per sale would bury the ledger. So POS decrements stock in real time on every sale, but accumulates the day's money inside a SHIFT and posts ONE aggregated Z-entry at shift close, routed by payment method. Follow a sale from scan to shift-close and see exactly where inventory, revenue and VAT land.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/sales-orders/sales-orders.html">
+          <div class="thumb"><img src="modules/sales-orders/screenshots/orders-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Order → Inventory-out → Ledger</p>
+            <h3>Sales Orders</h3>
+            <p>The mirror image of procure-to-pay. A sales order is a customer's intent to buy; placing it only RESERVES stock. Fulfilment is the resolution — it moves inventory OUT, consumes cost layers into COGS, and books revenue, output VAT, and a receivable in one stroke. Follow an order from placed to delivered and watch six ledger effects fall out of a single fulfil action.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/returns-rma/returns-rma.html">
+          <div class="thumb"><img src="modules/returns-rma/screenshots/returns-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Confirm → Goods + Ledger + Money</p>
+            <h3>Returns &amp; RMA</h3>
+            <p>A return is the sale run backwards — but it is not one reversal, it is three. When an admin confirms an RMA, a single event (order:change.confirmed) fans out to three independent handlers: goods move back, the ledger reverses, and money is refunded. The pivot is the per-line DISPOSITION: whether each returned unit re-enters the balance sheet as a sellable asset or leaves it as a loss. Follow one confirmation and watch all three resolutions fall out of that one field.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/promotions/promotions.html">
+          <div class="thumb"><img src="modules/promotions/screenshots/promo-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Program → Server eval → Discount → Voucher commit</p>
+            <h3>Promotions &amp; Coupons</h3>
+            <p>A coupon is a promise the SERVER must be able to police. This guide follows a promotion from its rule definition to the moment it discounts a real order — and shows why the math is never trusted to the client. The promo engine evaluates the code against the canonical, server-resolved cart, promotes the result onto the order's totals.discount, and commits the voucher only when the order actually lands. It is the same reserve → commit → rollback lifecycle that manual discounts and loyalty redemption ride — one discount pipeline, three sources.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/loyalty/loyalty.html">
+          <div class="thumb"><img src="modules/loyalty/screenshots/loyalty-dashboard.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Earn → Tiers → Redeem</p>
+            <h3>Loyalty</h3>
+            <p>Loyalty is a two-way ledger of trust: customers EARN points on what they buy and REDEEM them for discounts — and both sides resolve into the same order pipeline and the same books. Follow a point from the rule that mints it, through the tier it qualifies, to the till where it's redeemed — where the SERVER (never the client) reserves the points, turns them into a discount, and confirms the spend only when the sale actually lands. Every number here was captured from a real redemption.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="cat" id="buy">
+      <div class="cat-head"><h2>Buy — Purchasing &amp; Suppliers</h2><span class="count">3 guides</span></div>
+      <p class="cat-blurb">Procure-to-pay: raise POs, receive goods, book expense bills, and reconcile the supplier subsidiary ledger.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/purchase-orders/purchase-orders.html">
+          <div class="thumb"><img src="modules/purchase-orders/screenshots/po-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Purchasing → Inventory → Ledger</p>
+            <h3>Procure-to-Pay</h3>
+            <p>A purchase order is not a status field — it is the trigger for two independent resolutions that must stay in lockstep. This guide follows one PO end to end and shows what actually happens underneath: how receiving resolves into INVENTORY (a Flow move, a quant increment, a cost layer) AND into the LEDGER (a GR/IR accrual), and how posting the bill clears that accrual into Accounts Payable. Understand this once and every downstream report — stock valuation, GR/IR, A/P aging — makes sense.</p>
+            <div class="card-meta">
+              <span class="steps-pill">11</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/expense-purchases/expense-purchases.html">
+          <div class="thumb"><img src="modules/expense-purchases/screenshots/derive.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Accounting · Purchasing</p>
+            <h3>Expense &amp; Non-Inventory Purchases</h3>
+            <p>Not every purchase is stock. Event printing, a booked hall, legal fees, office utensils — these never touch inventory; they hit an expense (or asset) account and Accounts Payable. The catch: the person entering the bill is rarely an accountant and shouldn't have to know that &quot;posters&quot; means GL 6301. So the system derives the account from the plain description — a rule engine, not a lookup table — books it correctly, and routes big spends through an approval chain. Follow a real expense bill from a typed sentence to a balanced journal entry, and see where inventory is deliberately NOT involved. Every number here was captured from the live ledger.</p>
+            <div class="card-meta">
+              <span class="steps-pill">5</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/suppliers/suppliers.html">
+          <div class="thumb"><img src="modules/suppliers/screenshots/suppliers-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Master → A/P subsidiary ledger → Payment</p>
+            <h3>Suppliers</h3>
+            <p>A supplier is the one purchasing record that is NOT per-branch. Stock is isolated by branch, but WHO you buy from is shared company-wide — one master record every branch raises purchase orders against. That record is also a PARTNER in the accounting subsidiary ledger: every branch's unpaid bill to a vendor threads back to it, aggregating into a single A/P aging that must reconcile to the control account. Follow a supplier from master record to the payment that clears its aging.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="cat" id="stock">
+      <div class="cat-head"><h2>Stock — Inventory &amp; Warehouse</h2><span class="count">6 guides</span></div>
+      <p class="cat-blurb">Per-branch stock control, warehouse operations, inter-branch transfers, cycle counts, and how cost flows into COGS.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/inventory/inventory.html">
+          <div class="thumb"><img src="modules/inventory/screenshots/stock-levels.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Inventory · WMS</p>
+            <h3>Inventory &amp; Stock Control</h3>
+            <p>Track stock per branch, catch what is running low, move goods between branches on a challan, replenish from suppliers, and audit every movement — the day-to-day inventory loop in five screens.</p>
+            <div class="card-meta">
+              <span class="steps-pill">5</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/warehouse/warehouse.html">
+          <div class="thumb"><img src="modules/warehouse/screenshots/warehouses.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Warehouse · WMS</p>
+            <h3>Warehouse Management</h3>
+            <p>The full warehouse lifecycle end to end — model the site, receive goods, let reorder rules replenish, batch picks into waves, count stock, and publish a standard cost. Six screens, one continuous flow.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/warehouse-loading/warehouse-loading.html">
+          <div class="thumb"><img src="modules/warehouse-loading/screenshots/wh-warehouses.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Purchase → Warehouse → Catalog</p>
+            <h3>Warehouse Loading &amp; Catalog Link</h3>
+            <p>The procure-to-pay guide showed WHAT a receipt posts to the ledger. This one shows WHERE the goods physically land and how they become sellable. Follow the received stock as it loads into a warehouse location, becomes an on-hand quant, and links back — by SKU — to a catalog product whose storefront buy-button reflects it automatically. This is the join between purchasing, the WMS, and the catalog.</p>
+            <div class="card-meta">
+              <span class="steps-pill">5</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/transfers/transfers.html">
+          <div class="thumb"><img src="modules/transfers/screenshots/transfers-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Dispatch → Transit → Receive</p>
+            <h3>Inter-branch Transfers</h3>
+            <p>A transfer is the only operation that touches TWO branches at once — and it exposes the whole architecture. Because Flow is per-branch isolated (organizationId = branchId), moving stock needs DUAL contexts: one to decrement the sender, another to increment the receiver. And because accounting is a SINGLE company ledger with branch as a dimension, the same movement posts a PAIR of journal entries bridged by an in-transit clearing account — company inventory never changes, only the branch tag does. Follow one challan from dispatch to receive.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/stock-adjustments/stock-adjustments.html">
+          <div class="thumb"><img src="modules/stock-adjustments/screenshots/audit-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Count → Variance → Draft JE</p>
+            <h3>Stock Adjustments &amp; Cycle Count</h3>
+            <p>Procurement adds stock, sales remove it, transfers move it — yet the physical shelf still drifts from the system through theft, breakage and miscounts. Stock Audit is the CORRECTION leg that closes that gap. It reconciles counted-against-system, and every variance resolves into a Flow move to the adjustment location AND a journal entry. But uniquely, that JE lands as a DRAFT — because writing inventory value off the balance sheet is a decision a human must approve, not an automatic post.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/cost-valuation/cost-valuation.html">
+          <div class="thumb"><img src="modules/cost-valuation/screenshots/cost-totals.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Layers → Method → COGS</p>
+            <h3>Cost &amp; Valuation</h3>
+            <p>Every other guide in this suite says the same three words — 'consumes cost layers'. This is the guide that explains them. Inventory value on your balance sheet is not a number anyone types in; it is the live SUM of cost layers, each opened by a receipt at the price you actually paid. When you sell, transfer or write off, a layer drains — and the price frozen in that layer becomes your COGS. Understand the layer and you understand where every margin number in the system comes from.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="cat" id="books">
+      <div class="cat-head"><h2>Books — Accounting &amp; Tax</h2><span class="count">4 guides</span></div>
+      <p class="cat-blurb">The single company-wide ledger: chart of accounts, receivables/payables aging, VAT + withholding, and closing the period.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/accounting/accounting.html">
+          <div class="thumb"><img src="modules/accounting/screenshots/acc-full.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Accounting · Ledger</p>
+            <h3>Chart of Accounts</h3>
+            <p>The company-wide ledger that every branch posts against. Open it, find any account, seed the standard BFRS chart, and link a new account — all from one screen.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/ar-ap-aging/ar-ap-aging.html">
+          <div class="thumb"><img src="modules/ar-ap-aging/screenshots/aging.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Accounting · Receivables &amp; Payables</p>
+            <h3>A/R &amp; A/P Aging</h3>
+            <p>Aging answers one question a business lives or dies by: who owes us, how much, and how late. But the report is only the surface. Underneath, every open item is a single line on ONE control account (A/R 1141 for customers, A/P 2111 for suppliers), tagged at posting time with the partner it belongs to and the date it falls due. Follow a real invoice from the moment it posts — where the control line is stamped with a partnerId and a maturityDate — through the bucket it lands in, the per-partner sub-ledger it rolls up into, the control account it reconciles against to the paisa, and the payment that finally clears it. Every number here was captured live from the running ledger.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/invoice-tax-withholding/invoice-tax-withholding.html">
+          <div class="thumb"><img src="modules/invoice-tax-withholding/screenshots/invoice-doc.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Accounting · Tax</p>
+            <h3>Invoice Tax &amp; Withholding</h3>
+            <p>One vendor bill, followed from a typed line to a balanced journal entry — through the part most ERPs get wrong. Bangladesh tax is not one number: a bill carries VAT (and Supplementary Duty) that must each post to their OWN ledger head, because the NBR reads them off separate Mushak grids. And the buyer must DEDUCT tax at source — TDS on the base value, VDS on the VAT — pay the supplier the remainder, and remit the withheld slice to the NBR. Get any of it wrong and the books lie: the document subledger disagrees with the general ledger, or you claim an input credit you may not. This guide traces a real ৳100,000 contractor bill (BILL-2026-00017) where the operator types nothing about tax accounts and nothing about withholding — the supplier's profile and the country tax pack do it all — and lands on Balance Due ৳102,500. Every number here was captured from the live ledger.</p>
+            <div class="card-meta">
+              <span class="steps-pill">9</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/period-close/period-close.html">
+          <div class="thumb"><img src="modules/period-close/screenshots/close-wizard.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Gates → Trial Balance → Lock</p>
+            <h3>Period Close &amp; Trial Balance</h3>
+            <p>Every guide in this suite ended with a journal entry. This is where they all come due. Month-end close is the control that verifies each resolution actually landed — no draft left unposted, no clearing account left dangling, no sale left uncosted, no shift left open — and then LOCKS the period so the numbers can never silently change afterwards. The close wizard is a fixed checklist of gates, and each gate is one of the modules you have already followed. It is the capstone that proves the whole system reconciles.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot">
+      <p><span class="mono">How these are made</span>Every guide is a single self-contained HTML file built from live screenshots (<code>tools/build-doc.js</code>). Narration lines are tagged for translation, so the same steps can drive Bangla (or any locale) voiceover video renders.</p>
+      <span class="badge">commerce-guides · 18 modules · 113 steps</span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -36,6 +36,11 @@ body{margin:0}
   background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
   pointer-events:none;
 }
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
 .eyebrow{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -157,6 +162,7 @@ h1{
 <div class="page">
   <div class="wrap">
     <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
       <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; Accounting · Receivables &amp; Payables</p>
       <h1>A/R &amp; A/P Aging</h1>
       <p class="lede">Aging answers one question a business lives or dies by: who owes us, how much, and how late. But the report is only the surface. Underneath, every open item is a single line on ONE control account (A/R 1141 for customers, A/P 2111 for suppliers), tagged at posting time with the partner it belongs to and the date it falls due. Follow a real invoice from the moment it posts — where the control line is stamped with a partnerId and a maturityDate — through the bucket it lands in, the per-partner sub-ledger it rolls up into, the control account it reconciles against to the paisa, and the payment that finally clears it. Every number here was captured live from the running ledger.</p>

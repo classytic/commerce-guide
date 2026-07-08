@@ -36,6 +36,11 @@ body{margin:0}
   background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
   pointer-events:none;
 }
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
 .eyebrow{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -157,6 +162,7 @@ h1{
 <div class="page">
   <div class="wrap">
     <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
       <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; How it works · Layers → Method → COGS</p>
       <h1>Cost &amp; Valuation</h1>
       <p class="lede">Every other guide in this suite says the same three words — 'consumes cost layers'. This is the guide that explains them. Inventory value on your balance sheet is not a number anyone types in; it is the live SUM of cost layers, each opened by a receipt at the price you actually paid. When you sell, transfer or write off, a layer drains — and the price frozen in that layer becomes your COGS. Understand the layer and you understand where every margin number in the system comes from.</p>

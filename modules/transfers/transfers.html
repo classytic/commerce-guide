@@ -36,6 +36,11 @@ body{margin:0}
   background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
   pointer-events:none;
 }
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
 .eyebrow{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -157,6 +162,7 @@ h1{
 <div class="page">
   <div class="wrap">
     <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
       <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; How it works · Dispatch → Transit → Receive</p>
       <h1>Inter-branch Transfers</h1>
       <p class="lede">A transfer is the only operation that touches TWO branches at once — and it exposes the whole architecture. Because Flow is per-branch isolated (organizationId = branchId), moving stock needs DUAL contexts: one to decrement the sender, another to increment the receiver. And because accounting is a SINGLE company ledger with branch as a dimension, the same movement posts a PAIR of journal entries bridged by an in-transit clearing account — company inventory never changes, only the branch tag does. Follow one challan from dispatch to receive.</p>

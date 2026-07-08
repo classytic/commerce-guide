@@ -36,6 +36,11 @@ body{margin:0}
   background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
   pointer-events:none;
 }
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
 .eyebrow{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -157,6 +162,7 @@ h1{
 <div class="page">
   <div class="wrap">
     <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
       <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; How it works · Master → A/P subsidiary ledger → Payment</p>
       <h1>Suppliers</h1>
       <p class="lede">A supplier is the one purchasing record that is NOT per-branch. Stock is isolated by branch, but WHO you buy from is shared company-wide — one master record every branch raises purchase orders against. That record is also a PARTNER in the accounting subsidiary ledger: every branch's unpaid bill to a vendor threads back to it, aggregating into a single A/P aging that must reconcile to the control account. Follow a supplier from master record to the payment that clears its aging.</p>

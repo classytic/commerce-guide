@@ -154,6 +154,11 @@ body{margin:0}
   background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
   pointer-events:none;
 }
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
 .eyebrow{
   font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
   color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
@@ -275,6 +280,7 @@ h1{
 <div class="page">
   <div class="wrap">
     <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
       <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; ${esc(spec.section)}</p>
       <h1>${esc(spec.module)}</h1>
       <p class="lede">${esc(spec.lede)}</p>
