@@ -1,4 +1,4 @@
-// Guidde/Scribe-style module doc builder for BigBoss Commerce.
+// Guidde/Scribe-style module doc builder for the Classytic commerce ERP.
 // Reads screenshots, embeds them as data URIs, computes % callout boxes from
 // raw pixel coords, and emits ONE self-contained HTML page per module.
 //
@@ -281,7 +281,7 @@ h1{
   <div class="wrap">
     <header class="hero">
       <a class="back-link" href="../../index.html">&larr; All guides</a>
-      <p class="eyebrow"><span class="dot"></span>BigBoss Commerce &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; ${esc(spec.section)}</p>
+      <p class="eyebrow"><span class="dot"></span>ERP by Classytic &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; ${esc(spec.section)}</p>
       <h1>${esc(spec.module)}</h1>
       <p class="lede">${esc(spec.lede)}</p>
       <div class="meta-row">

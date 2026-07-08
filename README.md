@@ -1,7 +1,8 @@
-# BigBoss Commerce — Module Guides
+# ERP by Classytic — Module Guides
 
-Guidde/Scribe-style, click-by-click visual walkthroughs of the BigBoss Commerce
-admin dashboard. **One self-contained HTML file per module**, built from live
+Guidde/Scribe-style, click-by-click visual walkthroughs of the Classytic
+commerce ERP admin dashboard — one unified platform behind every client
+deployment. **One self-contained HTML file per module**, built from live
 screenshots of the running app with annotated callout boxes and
 translation-ready narration — designed to later drive multi-language video
 tutorials.
