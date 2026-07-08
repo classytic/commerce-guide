@@ -1,114 +1,82 @@
 {
   "module": "POS Register",
   "slug": "pos-register",
-  "section": "How it works · Scan → Shift → Daily-Z posting",
+  "section": "How it works · Open → Sell → Close → Daily-Z",
   "branchContext": "Store branch (POS-only)",
-  "lede": "POS resolves inventory and the ledger the same way ecom Sales Orders do — with one decisive difference: TIMING. A store rings hundreds of small cash and card sales a day; a journal entry per sale would bury the ledger. So POS decrements stock in real time on every sale, but accumulates the day's money inside a SHIFT and posts ONE aggregated Z-entry at shift close, routed by payment method. Follow a sale from scan to shift-close and see exactly where inventory, revenue and VAT land.",
+  "lede": "Follow one till session end to end — open the register with a cash float, ring up sales, take payment, then close the drawer. POS resolves inventory in real time on every sale, but accumulates the day's money inside the SHIFT and posts ONE aggregated Z-entry at close, routed by payment method. Captured live: open → two sales (cash + bKash) → count the drawer → the balanced journal entry in Accounting.",
   "out": "pos.html",
   "steps": [
     {
       "action": "NAVIGATE",
-      "title": "The register runs on a branch + an open shift",
+      "title": "Open the register — count the starting float",
+      "tag": "Open Register · opening cash",
+      "narration": "A till session begins by OPENING the register. Count the physical cash already in the drawer (the opening float — tap a quick amount or key it on the numpad) and hit Open Register. This starts the SHIFT: from here every sale accumulates into this session's running payment breakdown, and the float becomes the baseline the drawer is reconciled against at close. Nothing sells until a shift is open.",
+      "img": "screenshots/cycle-1-open.png",
+      "box": { "x": 730, "y": 390, "w": 133, "h": 150 }
+    },
+    {
+      "action": "ORIENT",
+      "title": "The terminal: one branch, one open shift",
       "tag": "Shift Open — the accumulator",
-      "narration": "The terminal is a full-screen register: a product grid with live stock and prices on the left, and the cart on the right. Two things scope everything. First, the branch — 'Head Office' here — the register is bound to one store (organizationId = branchId), so it only ever sells and decrements THAT branch's stock. Second, the SHIFT: 'Shift Open' means a till session is running, and every sale is booked into that shift's running payment breakdown — not the ledger, yet.",
-      "img": "screenshots/pos-terminal.png",
-      "box": {
-        "x": 30,
-        "y": 8,
-        "w": 250,
-        "h": 40
-      }
+      "narration": "The register is now live: a product grid with per-branch stock and prices on the left, the cart on the right. Two things scope everything. First the BRANCH — 'Eternal Ceramics HQ' here — the till is bound to one store (organizationId = branchId), so it only ever sells and decrements THAT branch's stock. Second the SHIFT: the 'Shift Open' badge means the accumulator is running, and every sale books into its payment breakdown — not the ledger, yet.",
+      "img": "screenshots/cycle-2-terminal.png",
+      "box": { "x": 8, "y": 11, "w": 250, "h": 26 }
     },
     {
       "action": "CLICK",
       "title": "Ring up a sale — scan or tap",
       "tag": "F4 barcode · live quant guard",
-      "narration": "Scan a barcode (F4), search (F3), or tap a product to add it to the cart on the right. The line, its quantity stepper, and the running Total update live and VAT-inclusive. Each line is checked against the branch's live Flow quant, so the till cannot oversell what is physically on the shelf — the same on-hand number Stock Levels shows, read at the point of sale.",
-      "img": "screenshots/pos-cart.png",
-      "box": {
-        "x": 836,
-        "y": 108,
-        "w": 426,
-        "h": 152
-      }
+      "narration": "Scan a barcode (F4), search (F3), or tap a product to add it to the cart. The line, its quantity stepper, and the running Total update live and VAT-inclusive. Each line is checked against the branch's live Flow quant, so the till cannot oversell what is physically on the shelf — the same on-hand number Stock Levels shows, read at the point of sale. Optionally attach a customer, then Checkout.",
+      "img": "screenshots/cycle-3-cart.png",
+      "box": { "x": 836, "y": 116, "w": 416, "h": 84 }
     },
     {
       "action": "RESOLVE",
       "title": "Paying resolves INVENTORY immediately (per sale)",
       "tag": "Flow move stock → customer · Dr COGS 5111 / Cr 1164",
-      "narration": "The instant a sale completes, inventory resolves in real time in this branch's Flow context: a move runs from the stock location to the customer location, the quant decrements, and the cost layers consumed post COGS — Dr COGS (5111) / Cr Inventory (1164). Stock and cost are never deferred; only the revenue side waits for shift close. That keeps on-hand accurate to the second even though the sales JE is batched.",
-      "img": "screenshots/pos-payment.png",
-      "box": {
-        "x": 1098,
-        "y": 428,
-        "w": 144,
-        "h": 162
-      }
+      "narration": "The instant a sale completes, inventory resolves in real time in this branch's Flow context: a move runs from the stock location to the customer location, the quant decrements, and the cost layers consumed post COGS — Dr COGS (5111) / Cr Inventory (1164). Stock and cost are never deferred; only the REVENUE side waits for shift close. That keeps on-hand accurate to the second even though the sales JE is batched.",
+      "img": "screenshots/cycle-4-payment.png",
+      "box": { "x": 1096, "y": 416, "w": 148, "h": 92 }
     },
     {
       "action": "RESOLVE",
       "title": "The tender METHOD is recorded — not posted yet",
       "tag": "cash / card / bKash / split → shift breakdown",
-      "narration": "Choose how the customer pays — cash, card, bKash/Nagad, or a split across several. Each tender is added to the shift's paymentBreakdown BY METHOD. This is the field that later decides which cash or bank GL account gets debited. Critically, paying posts NOTHING to the ledger on its own: the sale's money just accumulates in the open shift, method by method, all day.",
-      "img": "screenshots/pos-payment.png",
-      "box": {
-        "x": 948,
-        "y": 116,
-        "w": 296,
-        "h": 140
-      }
-    },
-    {
-      "action": "CLICK",
-      "title": "Close Register — count the drawer",
-      "tag": "Close Register",
-      "img": "screenshots/close-register.png",
-      "box": {
-        "x": 750,
-        "y": 413,
-        "w": 123,
-        "h": 150
-      },
-      "narration": "End of day, open the register menu and hit Close Register. The closing screen shows the shift's sales count, total revenue, and EXPECTED cash (opening float + cash sales − cash refunds). Key the physically counted drawer cash on the numpad — any difference is recorded as an over/short on the shift — then confirm. THIS is the moment the ledger gets written: closing fires the Daily-Z posting."
-    },
-    {
-      "action": "RESOLVE",
-      "title": "Shift close posts ONE aggregated daily-Z entry",
-      "tag": "Dr cash 1111 / card 1125 / mfs 1126 · Cr 4111 + 2132",
-      "narration": "At shift close, the ledger bridge (onShiftClosed) builds a SINGLE journal entry from the frozen paymentBreakdown. For each method with net positive sales it debits that method's clearing/cash account — cash → Petty Cash (1111), card → Gateway Clearing (1125, held by the processor until payout), mobile money → Mobile Money Merchant (1126) — for (sales − refunds); credits Sales Revenue (4111) net of tax; and credits Output VAT (2132). Routing each method to its own account lets daily settlement reconcile clearing → bank as payouts land. It is idempotent per shift (key pos-shift-{id}), so a double-close is a no-op. One entry, per method, for the whole day — the retail counterpart to ecom's one-JE-per-order.",
-      "img": "screenshots/pos-payment.png",
-      "box": {
-        "x": 40,
-        "y": 92,
-        "w": 592,
-        "h": 320
-      }
+      "narration": "Choose how the customer pays — a single method, or Split across several (cash + card + bKash). Each tender is added to the shift's paymentBreakdown BY METHOD. This is the field that later decides which cash or bank GL account gets debited. Critically, paying posts NOTHING to the ledger on its own: the money just accumulates in the open shift, method by method, all day. It also creates a per-sale revenue transaction (visible on the Transactions screen, tagged source=pos) — but the JE waits.",
+      "img": "screenshots/cycle-4-payment.png",
+      "box": { "x": 655, "y": 138, "w": 208, "h": 36 }
     },
     {
       "action": "RESULT",
-      "title": "Find it: Accounting → Journal Entries → POS Daily Sales",
-      "tag": "Daily-Z entry",
-      "img": "screenshots/je-daily-z-detail.png",
-      "box": {
-        "x": 310,
-        "y": 427,
-        "w": 915,
-        "h": 140
-      },
-      "narration": "The posted entry lives in Accounting → Journal Entries, labelled 'POS Daily Sales — {branch} — {date}' with reference POS_SALES/YYYY/MM/####. One debit line per tender method — 1111 Cash in Hand for cash, 1126 Mobile Money Merchant for bKash/Nagad, 1125 Gateway Clearing for cards — against a single credit to Sales Revenue (and VAT Output when applicable). Until the shift is closed you will find NO entry and NO transaction record for POS sales: that is by design, not a bug."
+      "title": "Sale complete — receipt ready, drawer updated",
+      "tag": "Order # · Print Receipt",
+      "narration": "The sale confirms with an order number and total; print or reprint the receipt, then New Sale (F2) for the next customer. Stock is already down, the tender is banked into the shift, a POS transaction exists — everything except the day's journal entry, which is deliberately deferred. A busy store rings hundreds of these; a JE per sale would bury the ledger, so they batch.",
+      "img": "screenshots/cycle-5-complete.png",
+      "box": { "x": 92, "y": 108, "w": 322, "h": 210 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Close the register — count & reconcile the drawer",
+      "tag": "Expected vs Counted cash · Close Register",
+      "narration": "End of day, open the register menu → Close Register. The closing screen freezes the shift: Sales count, total Revenue, and EXPECTED cash (opening float + cash sales − cash refunds — note bKash/card are NOT in the drawer). Key the physically counted cash; any gap is recorded as an over/short on the shift. Here it is an Exact Match. Confirming Close Register is the moment the ledger gets written.",
+      "img": "screenshots/cycle-6-close.png",
+      "box": { "x": 406, "y": 40, "w": 458, "h": 72 }
     },
     {
       "action": "RESOLVE",
-      "title": "Reconcile the drawer; VAT flows to the return",
-      "tag": "counted vs expected cash · Mushak 9.1",
-      "narration": "Closing also reconciles the physical drawer — counted cash against the shift's expected cash (opening float + cash sales − cash refunds). Because refunds during the shift net down each method BEFORE the Z-entry posts, the journal always matches what actually moved through the till. The net revenue and output VAT roll into the very same Mushak 9.1 VAT return as ecom sales — POS and online are two front-ends onto one set of books.",
-      "img": "screenshots/pos-terminal.png",
-      "box": {
-        "x": 30,
-        "y": 8,
-        "w": 250,
-        "h": 40
-      }
+      "title": "Close posts ONE Daily-Z, routed per method",
+      "tag": "Dr cash 1111 / mfs 1126 · Cr Sales 4111 + VAT 2132",
+      "narration": "At close the ledger bridge (onShiftClosed) builds a SINGLE journal entry from the frozen paymentBreakdown. For each method with net positive sales it debits that method's clearing/cash account — cash → Cash in Hand (1111), mobile money → Mobile Money Merchant (1126), card → Gateway Clearing (1125). Here two tenders → two debit lines, 17,950 each. Routing each method to its own account lets daily settlement reconcile clearing → bank as payouts land. Idempotent per shift (key pos-shift-{id}), so a double-close is a no-op.",
+      "img": "screenshots/cycle-7-je.png",
+      "box": { "x": 310, "y": 328, "w": 915, "h": 98 }
+    },
+    {
+      "action": "RESULT",
+      "title": "Balanced & filed — Accounting → Journal Entries",
+      "tag": "POS_SALES/YYYY/MM · Cr 4111 · Mushak 9.1",
+      "narration": "The posted entry lives in Accounting → Journal Entries, labelled 'POS Daily Sales — {branch} — {date}', reference POS_SALES/YYYY/MM/####. The per-method debits credit a single Sales Revenue (4111) line net of tax, plus Output VAT (2132) when applicable — Total Debit = Total Credit, Balanced. That net revenue and VAT roll into the very same Mushak 9.1 return as ecom sales: POS and online are two front-ends onto one set of books. One entry, per method, for the whole day.",
+      "img": "screenshots/cycle-7-je.png",
+      "box": { "x": 310, "y": 425, "w": 915, "h": 118 }
     }
   ]
 }
