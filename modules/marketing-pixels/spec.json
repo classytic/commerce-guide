@@ -1,0 +1,90 @@
+{
+  "module": "Marketing Pixels & Conversions",
+  "slug": "platform-marketing-pixels",
+  "section": "How it works · Dashboard → Storefront → Ad Platforms",
+  "branchContext": "Company-wide (single storefront config)",
+  "lede": "A marketing pixel is not one script tag you paste and forget. Setting it up here wires TWO dispatch paths that must stay in lockstep: the browser pixel that fires from the shopper's device, and a server-side twin that fires from the backend — sharing one deduplication key so ad platforms count each sale ONCE, and so a purchase still lands even when an ad-blocker kills the browser tag. This guide follows a pixel ID from the moment you type it in the dashboard to the moment a `purchase` reaches Meta and GA4, and shows the resolution underneath: how a PUBLIC id saved here reaches the storefront with no redeploy, why the SECRET token lives in server env instead, how one deployment serves several brands with different pixels, and how the browser and server events converge on the same conversion.",
+  "out": "marketing-pixels.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Open Platform Config → Marketing",
+      "tag": "Settings · Platform Config",
+      "narration": "Marketing lives inside Platform Configuration because pixel IDs are a company-wide setting, not a per-branch one — the public storefront is a single surface fulfilled from head office. Everything on this tab is admin-editable: there is no code deploy in this loop. That is the first thing to understand — a pixel ID is data, held on the platform config document, not a constant baked into the build.",
+      "img": "screenshots/mk-tab.png",
+      "box": { "x": 1010, "y": 337, "w": 110, "h": 33 }
+    },
+    {
+      "action": "CLICK",
+      "title": "The master switch gates every pixel",
+      "tag": "Enable storefront pixels",
+      "narration": "One switch arms the whole channel. Off means the storefront loads ZERO analytics or ad scripts — no gtag, no fbq, nothing — so a half-configured account never leaks events. The banner states the contract this tab lives by: the IDs you enter are PUBLIC (they ship to the browser by design, exactly as they would in any pixel snippet), while the server-side conversion SECRETS — the Meta CAPI access token, the GA4 API secret — are never entered here. They belong in server env. Hold that split; step 4 explains why it matters.",
+      "img": "screenshots/mk-enable.png",
+      "box": { "x": 334, "y": 517, "w": 214, "h": 30 }
+    },
+    {
+      "action": "TYPE",
+      "title": "Enter the public pixel IDs",
+      "tag": "GA4 · Meta · TikTok · GTM",
+      "narration": "Paste the IDs from each platform's console: GA4's Measurement ID (Admin → Data Streams), Meta's Pixel ID (Events Manager → Data Sources), the TikTok Pixel ID, or a GTM container if your team manages tags there instead. Each field maps to one browser adapter. An empty field means that channel simply never boots — you are not forced to run all four. Save is one click away and takes effect on the next storefront page load; there is no build step between here and live.",
+      "img": "screenshots/mk-filled.png",
+      "box": { "x": 334, "y": 499, "w": 868, "h": 42 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Why IDs are public but tokens are not",
+      "tag": "Browser id vs server secret",
+      "narration": "The split is not bureaucratic — the two dispatch paths need different credentials. The BROWSER path only needs the public id: the storefront injects `gtag('config', G-…)` / `fbq('init', …)` and the vendor script does the rest, hashing any PII client-side. The SERVER path (step 9) calls Meta's Conversions API and GA4's Measurement Protocol directly, and those require a SECRET token that must never reach a browser — so it is read from server env, keyed to the same pixel. Enter the id here; ops sets the matching token in env once. A channel fires server-side only when BOTH halves are present.",
+      "img": "screenshots/mk-enable.png",
+      "box": { "x": 334, "y": 414, "w": 868, "h": 78 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "How the ID reaches the storefront",
+      "tag": "GET /platform/config → adapters boot",
+      "narration": "Saving writes the id onto the platform config document. The storefront reads that document through the PUBLIC config endpoint on its very first paint — the same request it already makes for currency and checkout settings, so this adds no round-trip and works for logged-out shoppers. The analytics provider takes the ids it finds and registers exactly those adapters, lazily loading each vendor script. Because the storefront reads the id at RUNTIME rather than at build time, changing it here goes live on the next page view — no redeploy, no cache bust.",
+      "img": "screenshots/mk-filled.png",
+      "box": { "x": 334, "y": 390, "w": 868, "h": 151 }
+    },
+    {
+      "action": "CLICK",
+      "title": "One deployment, several brands",
+      "tag": "Per-Site Overrides · Add Site",
+      "narration": "A single storefront deployment can serve multiple brands over different domains — each resolved from the request Host. If those brands need their own pixels, Add Site creates a per-brand override row. Leave this empty and every brand shares the global IDs above; that is the common single-brand case. Add a row only when a brand must report to its own ad account.",
+      "img": "screenshots/mk-persite.png",
+      "box": { "x": 1107, "y": 383, "w": 92, "h": 32 }
+    },
+    {
+      "action": "TYPE",
+      "title": "Key the override to the brand",
+      "tag": "Site ID must match SiteConfig",
+      "narration": "The Site ID is the join key — it must match the brand's `siteId` in the storefront's site registry (here, the 'zen' brand). The four id fields on the row are PER-FIELD overrides: fill only what differs. A brand that wants its own Meta pixel but shares the company GA4 stream fills Meta and leaves GA4 blank — the blank field inherits the global value. This is the whole point of the row: targeted divergence, not a full re-entry.",
+      "img": "screenshots/mk-persite-row.png",
+      "box": { "x": 334, "y": 245, "w": 864, "h": 112 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "How a brand's pixels resolve",
+      "tag": "override → site row → global",
+      "narration": "At request time the active brand is resolved from the Host, and its pixel set is merged in three tiers, per field: a code-side pin (rare, for locked brands) wins first; else the matching site row here; else the global block above. Two independent kill switches apply — the GLOBAL master switch darkens every brand at once, while a single row's own switch darkens just that brand. So 'zen' can go dark for a relaunch without touching the others, and one flip up top can silence the whole estate. The server-side twin resolves the SAME row, so a brand's browser and server events always agree on which ad account they belong to.",
+      "img": "screenshots/mk-persite-row.png",
+      "box": { "x": 334, "y": 245, "w": 864, "h": 294 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The purchase fires twice, counts once",
+      "tag": "browser pixel + server twin, one eventId",
+      "narration": "This is why the setup is worth it. When an order completes, the storefront fires `purchase` from the browser (Meta Pixel / GA4 / TikTok) AND posts a first-party server event that the backend relays to each platform's server API — Meta CAPI, GA4 Measurement Protocol, TikTok Events API. Both carry the SAME event id, keyed to the order number, so the platform DEDUPLICATES the pair into one conversion. If an ad-blocker or iOS killed the browser tag, the server twin still lands — recovering roughly the third of conversions a browser-only pixel silently loses. The server post is first-party, so blockers that target the ad domains never see it.",
+      "img": "screenshots/mk-persite.png",
+      "box": { "x": 334, "y": 366, "w": 632, "h": 60 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Save — it is live on the next page view",
+      "tag": "Save Configuration",
+      "narration": "Save persists the whole block — global IDs, the master switch, and every per-site row — to the platform config document. No publish, no deploy: the next shopper to load the storefront gets the pixels. Verify in each platform's real-time / test-events view within a minute; if a channel is dark, check that its id is filled AND (for the server side) that its env token is set. That two-part check is the one thing this tab cannot show you, by design — the secret never lives here.",
+      "img": "screenshots/mk-persite.png",
+      "box": { "x": 1033, "y": 507, "w": 158, "h": 32 }
+    }
+  ]
+}

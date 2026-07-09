@@ -20,7 +20,7 @@ const CATEGORIES = [
     id: "sell",
     title: "Sell — POS, Orders & Growth",
     blurb: "Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.",
-    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points", "pricelist-rules"],
+    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points", "pricelist-rules", "platform-marketing-pixels"],
   },
   {
     id: "buy",

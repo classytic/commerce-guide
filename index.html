@@ -14,15 +14,15 @@
       <h1>Learn the platform, one flow at a time.</h1>
       <p class="lede">Click-by-click visual walkthroughs of the admin dashboard, captured live from the running app. Each guide traces one business flow end to end — what to click, what the system does underneath, and which journals it books.</p>
       <div class="meta-row">
-        <span class="chip"><b>20</b> guides</span>
-        <span class="chip"><b>126</b> annotated steps</span>
+        <span class="chip"><b>21</b> guides</span>
+        <span class="chip"><b>136</b> annotated steps</span>
         <span class="chip"><span class="ring"></span> callout = where to click</span>
         <span class="chip"><b>EN</b> · translation-ready</span>
       </div>
     </header>
 
     <section class="cat" id="sell">
-      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">6 guides</span></div>
+      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">7 guides</span></div>
       <p class="cat-blurb">Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.</p>
       <div class="grid">
 
@@ -99,6 +99,19 @@
             <p>One catalog, many prices. A PRICE LIST is a named set of rules that reprices products for a customer segment — wholesale buyers, a specific channel, or volume orders — without cloning the catalog. Each rule carries a SCOPE (all / category / product / variant), a COMPUTATION (fixed price, % discount, or formula), a minimum-quantity gate, and a priority. At order time the pricing bridge finds every rule that matches the line, sorts them deterministically, and applies the winner. Captured live: a wholesale list that takes 15% off any product when the customer buys 5 or more.</p>
             <div class="card-meta">
               <span class="steps-pill">5</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/marketing-pixels/marketing-pixels.html">
+          <div class="thumb"><img src="modules/marketing-pixels/screenshots/mk-tab.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">How it works · Dashboard → Storefront → Ad Platforms</p>
+            <h3>Marketing Pixels &amp; Conversions</h3>
+            <p>A marketing pixel is not one script tag you paste and forget. Setting it up here wires TWO dispatch paths that must stay in lockstep: the browser pixel that fires from the shopper's device, and a server-side twin that fires from the backend — sharing one deduplication key so ad platforms count each sale ONCE, and so a purchase still lands even when an ad-blocker kills the browser tag. This guide follows a pixel ID from the moment you type it in the dashboard to the moment a `purchase` reaches Meta and GA4, and shows the resolution underneath: how a PUBLIC id saved here reaches the storefront with no redeploy, why the SECRET token lives in server env instead, how one deployment serves several brands with different pixels, and how the browser and server events converge on the same conversion.</p>
+            <div class="card-meta">
+              <span class="steps-pill">10</span> steps
               <span class="open">Open guide →</span>
             </div>
           </div>
@@ -311,7 +324,7 @@
 
     <footer class="foot">
       <p><span class="mono">How these are made</span>Every guide is a single self-contained HTML file built from live screenshots (<code>tools/build-doc.js</code>). Narration lines are tagged for translation, so the same steps can drive Bangla (or any locale) voiceover video renders.</p>
-      <span class="badge">commerce-guides · 20 modules · 126 steps</span>
+      <span class="badge">commerce-guides · 21 modules · 136 steps</span>
     </footer>
   </div>
 </body>
