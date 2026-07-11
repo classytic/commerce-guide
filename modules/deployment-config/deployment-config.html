@@ -1,0 +1,450 @@
+<style>
+:root{
+  --ink:#16181D; --ink-soft:#2A2D35;
+  --paper:#EFEEEA; --paper-2:#E6E4DE;
+  --card:#FFFFFF;
+  --signal:#FF5A1F; --signal-ink:#B23A0E;
+  --steel:#2B4C6F; --steel-soft:#4A6D91;
+  --result:#1F7A4D;
+  --mute:#6B6C70; --line:#D8D6CE;
+  --mono:ui-monospace,"Cascadia Code","SF Mono",Menlo,Consolas,monospace;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+body{margin:0}
+.page{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  padding:clamp(20px,4vw,56px) clamp(16px,4vw,48px) 72px;
+}
+.wrap{max-width:1080px;margin:0 auto}
+
+/* ---------- hero ---------- */
+.hero{
+  border:1px solid var(--line);
+  background:
+    linear-gradient(180deg,#fff, #fbfaf7);
+  border-radius:18px;
+  padding:clamp(24px,3.5vw,44px);
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(120% 140% at 100% 0%, rgba(43,76,111,.06), transparent 55%);
+  pointer-events:none;
+}
+.back-link{
+  font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-decoration:none;
+  color:var(--mute);display:inline-block;margin:0 0 12px;
+}
+.back-link:hover{color:var(--signal-ink)}
+.eyebrow{
+  font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--steel);margin:0 0 14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.eyebrow .dot{width:5px;height:5px;border-radius:50%;background:var(--signal);display:inline-block}
+h1{
+  font-size:clamp(30px,5vw,50px);line-height:1.02;letter-spacing:-.02em;
+  margin:0 0 12px;font-weight:800;text-wrap:balance;
+}
+.lede{font-size:clamp(16px,1.6vw,19px);color:var(--ink-soft);max-width:60ch;margin:0 0 22px}
+.meta-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.chip{
+  font-family:var(--mono);font-size:12px;letter-spacing:.03em;
+  border:1px solid var(--line);background:#fff;border-radius:999px;
+  padding:6px 12px;color:var(--ink-soft);display:inline-flex;gap:7px;align-items:center;
+}
+.chip b{color:var(--ink);font-weight:600}
+.chip .ring{width:11px;height:11px;border-radius:3px;border:2px solid var(--signal);display:inline-block}
+
+/* ---------- flow map ---------- */
+.flowmap{
+  margin:26px 0 8px;border:1px solid var(--line);background:var(--card);
+  border-radius:14px;padding:16px 18px;overflow-x:auto;
+}
+.flowmap h2{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--mute);margin:0 0 12px}
+.flow{list-style:none;display:flex;align-items:center;gap:8px;margin:0;padding:0;min-width:max-content}
+.flow-node{display:flex;align-items:center;gap:9px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 12px}
+.flow-num{font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;background:var(--steel);border-radius:6px;padding:2px 7px;font-variant-numeric:tabular-nums}
+.flow-label{font-size:13px;font-weight:600;white-space:nowrap;color:var(--ink)}
+.flow-arrow{color:var(--steel-soft);font-size:16px}
+
+/* ---------- steps ---------- */
+.steps{margin-top:30px}
+.step{display:grid;grid-template-columns:52px 1fr;gap:clamp(12px,2vw,22px);position:relative}
+.step-rail{display:flex;flex-direction:column;align-items:center;position:relative}
+.step-rail::before{content:"";position:absolute;top:44px;bottom:-30px;width:2px;background:linear-gradient(var(--line),var(--line));left:calc(50% - 1px)}
+.step:last-child .step-rail::before{display:none}
+.pin{
+  width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+  font-family:var(--mono);font-weight:700;font-size:18px;color:#fff;
+  background:var(--steel);box-shadow:0 4px 12px rgba(22,24,29,.16);
+  font-variant-numeric:tabular-nums;position:relative;z-index:1;
+}
+.step--signal .pin{background:var(--signal)}
+.step--result .pin{background:var(--result)}
+.step-body{padding-bottom:38px;min-width:0}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;margin:6px 0 4px;display:flex;gap:8px;align-items:center;text-transform:uppercase}
+.kicker-step{color:var(--mute)}
+.kicker-dot{color:var(--line)}
+.kicker-act{color:var(--steel);font-weight:700}
+.step--signal .kicker-act{color:var(--signal-ink)}
+.step--result .kicker-act{color:var(--result)}
+.step-title{font-size:clamp(19px,2.3vw,24px);line-height:1.2;letter-spacing:-.01em;margin:0 0 8px;font-weight:700;text-wrap:balance}
+.narration{margin:0 0 16px;color:var(--ink-soft);max-width:64ch;font-size:15.5px}
+
+/* ---------- screenshot + callout ---------- */
+.shot{margin:0}
+.shot-frame{
+  position:relative;border-radius:12px;overflow:hidden;
+  border:1px solid var(--line);background:var(--paper-2);
+  box-shadow:0 1px 2px rgba(22,24,29,.05),0 12px 28px rgba(22,24,29,.09);
+  width:100%;
+}
+.shot-frame img{display:block;width:100%;height:auto}
+/* ---------- ledger (journal-entry) figure ---------- */
+.je{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:0 1px 2px rgba(22,24,29,.05),0 12px 28px rgba(22,24,29,.09)}
+.je-cap{font-weight:650;font-size:.92rem;color:var(--ink);padding:14px 18px 10px;
+  border-bottom:1px solid var(--line);letter-spacing:-.01em}
+.je-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.je-table thead th{text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mute);padding:10px 18px;background:var(--paper-2)}
+.je-table th.je-amt,.je-table td.je-amt{text-align:right;font-variant-numeric:tabular-nums}
+.je-table tbody td{padding:9px 18px;border-top:1px solid var(--line);color:var(--ink-soft)}
+.je-code{font-family:ui-monospace,"SF Mono",Menlo,monospace;color:var(--steel);font-weight:600}
+.je-name{color:var(--ink)}
+.je-dr{color:var(--signal-ink);font-weight:600}
+.je-cr{color:var(--result);font-weight:600}
+.je-table tfoot td{padding:10px 18px;border-top:2px solid var(--ink-soft);font-weight:700;background:var(--paper)}
+.je-total-label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.je-note{margin:0;padding:12px 18px;font-size:.85rem;color:var(--mute);border-top:1px dashed var(--line);background:var(--paper-2)}
+/* ---------- reference / config table figure ---------- */
+.rt{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:0 1px 2px rgba(22,24,29,.05),0 12px 28px rgba(22,24,29,.09)}
+.rt-cap{font-weight:650;font-size:.92rem;color:var(--ink);padding:14px 18px 10px;
+  border-bottom:1px solid var(--line);letter-spacing:-.01em}
+.rt-scroll{overflow-x:auto}
+.rt-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.rt-table thead th{text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mute);padding:10px 18px;background:var(--paper-2);white-space:nowrap}
+.rt-table tbody td{padding:9px 18px;border-top:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+.rt-table td.rt-key,.rt-table th.rt-key{white-space:nowrap}
+.rt-table code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.82rem;
+  color:var(--steel);font-weight:600;background:var(--paper);padding:2px 6px;border-radius:5px}
+.rt-note{margin:0;padding:12px 18px;font-size:.85rem;color:var(--mute);border-top:1px dashed var(--line);background:var(--paper-2)}
+.callout{
+  position:absolute;border-radius:7px;
+  border:2.5px solid var(--signal);
+  box-shadow:0 0 0 3px rgba(255,90,31,.28), 0 0 0 9999px rgba(20,22,28,.42);
+  pointer-events:none;
+}
+.step--steel .callout{border-color:var(--steel);box-shadow:0 0 0 3px rgba(43,76,111,.25),0 0 0 9999px rgba(20,22,28,.42)}
+.step--result .callout{border-color:var(--result);box-shadow:0 0 0 3px rgba(31,122,77,.25),0 0 0 9999px rgba(20,22,28,.42)}
+.callout-pin{
+  position:absolute;transform:translate(-52%,-52%);
+  width:26px;height:26px;border-radius:50%;background:var(--signal);color:#fff;
+  font-family:var(--mono);font-weight:700;font-size:13px;display:grid;place-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.35);border:2px solid #fff;z-index:3;
+  font-variant-numeric:tabular-nums;
+}
+.step--steel .callout-pin{background:var(--steel)}
+.step--result .callout-pin{background:var(--result)}
+.callout-tag{
+  position:absolute;transform:translate(-4px,calc(-100% - 10px));
+  font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;
+  background:var(--signal);color:#fff;padding:4px 9px;border-radius:6px;white-space:nowrap;
+  box-shadow:0 3px 10px rgba(0,0,0,.28);z-index:3;text-transform:uppercase;
+}
+.callout-tag--below{transform:translate(-4px,12px)}
+.step--steel .callout-tag{background:var(--steel)}
+.step--result .callout-tag{background:var(--result)}
+
+/* ---------- ring pulse ---------- */
+@media (prefers-reduced-motion:no-preference){
+  .callout-pin{animation:pulse 2.6s ease-out infinite}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,90,31,.5),0 2px 8px rgba(0,0,0,.35)}
+    70%{box-shadow:0 0 0 12px rgba(255,90,31,0),0 2px 8px rgba(0,0,0,.35)}
+    100%{box-shadow:0 0 0 0 rgba(255,90,31,0),0 2px 8px rgba(0,0,0,.35)}
+  }
+}
+
+/* ---------- footer ---------- */
+.foot{
+  margin-top:44px;border-top:1px solid var(--line);padding-top:24px;
+  display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;
+}
+.foot p{margin:0;color:var(--mute);font-size:13.5px;max-width:60ch}
+.foot .mono{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--steel);display:block;margin-bottom:6px}
+.badge{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--ink-soft);background:#fff}
+
+:focus-visible{outline:2px solid var(--signal);outline-offset:2px;border-radius:4px}
+@media (max-width:640px){
+  .step{grid-template-columns:38px 1fr}
+  .pin{width:34px;height:34px;font-size:15px;border-radius:10px}
+  .step-rail::before{top:38px}
+}
+</style>
+
+<div class="page">
+  <div class="wrap">
+    <header class="hero">
+      <a class="back-link" href="../../index.html">&larr; All guides</a>
+      <p class="eyebrow"><span class="dot"></span>ERP by Classytic &nbsp;·&nbsp; Operator Guide &nbsp;·&nbsp; Operations · Setup</p>
+      <h1>Deployment Config</h1>
+      <p class="lede">One codebase, one client per deployment — differentiated ONLY by environment. This is the short reference for the env vars that stand up a new client (BigBoss, Eternal, a US store …) without touching source: what localizes the money + calendar, what turns modules on/off, what sets the brand, and what MUST be isolated. Set these in the deployment's .env; everything else client-specific is data you seed in the admin UI. Full runbook: be-prod/DEPLOYMENT.md.</p>
+      <div class="meta-row">
+        <span class="chip"><b>6</b> steps</span>
+        <span class="chip"><b>Branch</b> Per-deployment .env</span>
+        <span class="chip"><span class="ring"></span> callout = where to click</span>
+        <span class="chip"><b>EN</b> &nbsp;·&nbsp; translation-ready</span>
+      </div>
+    </header>
+
+    <section class="flowmap" aria-label="Task flow">
+      <h2>Flow — deployment-config</h2>
+      <ol class="flow">
+      <li class="flow-node">
+        <span class="flow-num">01</span>
+        <span class="flow-label">Four config seams — the whole differentiation surface</span>
+      </li><li class="flow-arrow" aria-hidden="true">→</li>
+      <li class="flow-node">
+        <span class="flow-num">02</span>
+        <span class="flow-label">Localization — set COUNTRY_PACK, inherit currency + timezone + fiscal year</span>
+      </li><li class="flow-arrow" aria-hidden="true">→</li>
+      <li class="flow-node">
+        <span class="flow-num">03</span>
+        <span class="flow-label">Features — turn modules on, off, or to a tier</span>
+      </li><li class="flow-arrow" aria-hidden="true">→</li>
+      <li class="flow-node">
+        <span class="flow-num">04</span>
+        <span class="flow-label">Branding — the client's name, without a code edit</span>
+      </li><li class="flow-arrow" aria-hidden="true">→</li>
+      <li class="flow-node">
+        <span class="flow-num">05</span>
+        <span class="flow-label">Isolation — the one thing you must never get wrong</span>
+      </li><li class="flow-arrow" aria-hidden="true">→</li>
+      <li class="flow-node">
+        <span class="flow-num">06</span>
+        <span class="flow-label">Add a new country once — every client in it inherits it</span>
+      </li></ol>
+    </section>
+
+    <main class="steps">
+
+    <article class="step step--steel" id="step-1">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">1</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 01</span><span class="kicker-dot">·</span><span class="kicker-act">ORIENT</span></p>
+        <h3 class="step-title">Four config seams — the whole differentiation surface</h3>
+        <p class="narration" data-i18n="step-1" lang="en">A new client is a deployment config, not a fork. Four seams cover everything: LOCALIZATION (one switch sets currency, timezone, fiscal year, chart of accounts, and tax regime together), FEATURES (which modules boot), BRANDING (invoice/notification identity), and ISOLATION (never share a database or media store between clients). If you're editing a .ts file to onboard a client, stop — it belongs in .env or the PlatformConfig admin UI. The only code change to add a whole new COUNTRY is registering its pack (a shared capability, below), not per-client work.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">The four seams</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Seam</th><th>Set via</th><th>Controls</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>COUNTRY_PACK</code></td><td>env</td><td>Currency + timezone + fiscal year + chart of accounts + tax regime — all together</td></tr><tr><td class="rt-key"><code>FEATURE_&lt;ID&gt;</code></td><td>env</td><td>Which modules boot (off = zero routes/engine). e.g. FEATURE_POS=off</td></tr><tr><td class="rt-key"><code>FLOW_MODE</code></td><td>env</td><td>Warehouse/WMS depth: simple | standard | enterprise</td></tr><tr><td class="rt-key"><code>CLIENT_*</code></td><td>env</td><td>Brand identity on invoices + notifications</td></tr><tr><td class="rt-key"><code>MONGO_URI · S3_MEDIA_PREFIX</code></td><td>env</td><td>Per-client isolation — MANDATORY, never shared</td></tr></tbody>
+        </table>
+      </div>
+      <p class="rt-note">Defaults keep the flagship BigBoss deployment working when a var is unset; each is documented inline in .env.example.</p>
+    </figure>
+      </div>
+    </article>
+
+    <article class="step step--signal" id="step-2">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">2</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 02</span><span class="kicker-dot">·</span><span class="kicker-act">RESOLVE</span></p>
+        <h3 class="step-title">Localization — set COUNTRY_PACK, inherit currency + timezone + fiscal year</h3>
+        <p class="narration" data-i18n="step-2" lang="en">COUNTRY_PACK is the single localization switch. It selects the ledger's chart of accounts + tax pack AND drives the deployment's base currency, report timezone, and fiscal-year start (config.locale). Set only COUNTRY_PACK and inherit all three — BD → BDT / Asia-Dhaka / July; a US pack → USD / America-* / January. The per-field overrides exist only for the rare deployment that diverges from its country's norm (a BD company keeping books in USD). The timezone is VALIDATED at boot: an invalid IANA zone (a typo, or a POSIX name like GMT+6) fails the app to start rather than silently reporting every near-midnight transaction in UTC — 6h off Dhaka, into the wrong day/month/fiscal-year.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">Localization env</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Var</th><th>What it means</th><th>Default</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>COUNTRY_PACK</code></td><td>Country localization key (ISO-2). Selects chart + tax + money + calendar.</td><td>BD</td></tr><tr><td class="rt-key"><code>BASE_CURRENCY</code></td><td>Override the pack's currency (ISO 4217). Rarely needed.</td><td>pack default (BD → BDT)</td></tr><tr><td class="rt-key"><code>ACCOUNTING_TIMEZONE</code></td><td>Override the business timezone (IANA). Boot-validated.</td><td>pack default (BD → Asia/Dhaka)</td></tr><tr><td class="rt-key"><code>FISCAL_YEAR_START_MONTH</code></td><td>Override fiscal-year start month (1-12).</td><td>pack default (BD → 7 / July)</td></tr></tbody>
+        </table>
+      </div>
+      <p class="rt-note">Adding a whole new country = add a locale row + register its accounting pack (see the last step). Not per-client work.</p>
+    </figure>
+      </div>
+    </article>
+
+    <article class="step step--signal" id="step-3">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">3</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 03</span><span class="kicker-dot">·</span><span class="kicker-act">RESOLVE</span></p>
+        <h3 class="step-title">Features — turn modules on, off, or to a tier</h3>
+        <p class="narration" data-i18n="step-3" lang="en">Each module is gated by FEATURE_&lt;ID&gt;. A disabled feature registers ZERO routes and never boots its engine — it's not hidden, it's absent. `core` can't be disabled. FLOW_MODE separately sets warehouse depth: `simple` is basic stock; `standard` adds procurement, lots, packages, replenishment; `enterprise` adds waves, labor, traceability, and the depreciation auto-post cron. Tune these to the client's actual footprint — an online-only boutique runs FEATURE_POS=off, a 3PL runs FLOW_MODE=enterprise.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">Feature + mode env</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Var</th><th>Values</th><th>Example use</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>FEATURE_ACCOUNTING</code></td><td>basic | standard | enterprise | off</td><td>off for a shop that keeps books elsewhere</td></tr><tr><td class="rt-key"><code>FEATURE_POS</code></td><td>standard | off</td><td>off for an online-only business</td></tr><tr><td class="rt-key"><code>FEATURE_LOYALTY</code></td><td>standard | off</td><td>off if no points/tiers programme</td></tr><tr><td class="rt-key"><code>FEATURE_ASSETS</code></td><td>standard | enterprise | off</td><td>off if no fixed-asset register</td></tr><tr><td class="rt-key"><code>FEATURE_CRM</code></td><td>basic | standard | off</td><td>basic = contacts only, no pipeline</td></tr><tr><td class="rt-key"><code>FLOW_MODE</code></td><td>simple | standard | enterprise</td><td>enterprise for a 3PL warehouse</td></tr></tbody>
+        </table>
+      </div>
+      <p class="rt-note">Full list of FEATURE_&lt;ID&gt; ids is in .env.example; unknown values warn + are ignored (core is immune).</p>
+    </figure>
+      </div>
+    </article>
+
+    <article class="step step--signal" id="step-4">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">4</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 04</span><span class="kicker-dot">·</span><span class="kicker-act">RESOLVE</span></p>
+        <h3 class="step-title">Branding — the client's name, without a code edit</h3>
+        <p class="narration" data-i18n="step-4" lang="en">Backend-facing identity (invoice PDF header, notification 'from') is resolved entirely from CLIENT_* env — no source edit per client. Unset falls back to the BigBoss defaults, which double as the documentation of each var. Frontend branding (logo, theme, storefront chrome) is the Next.js app's own client.config, separate from these.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">Branding env</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Var</th><th>What it means</th><th>Example</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>CLIENT_NAME</code></td><td>Short brand name (emails, invoice header)</td><td>Eternal Ceramics</td></tr><tr><td class="rt-key"><code>CLIENT_LEGAL_NAME</code></td><td>Legal entity (invoices, tax filings)</td><td>Eternal Ceramics Ltd.</td></tr><tr><td class="rt-key"><code>CLIENT_SUPPORT_EMAIL</code></td><td>Support address on documents</td><td>support@eternalceramics.com</td></tr><tr><td class="rt-key"><code>CLIENT_LOGO_URL</code></td><td>Logo used on generated invoices</td><td>https://…/logo.svg</td></tr><tr><td class="rt-key"><code>CLIENT_STOREFRONT_URL</code></td><td>Public storefront URL</td><td>https://eternalceramics.com</td></tr></tbody>
+        </table>
+      </div>
+      
+    </figure>
+      </div>
+    </article>
+
+    <article class="step step--signal" id="step-5">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">5</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 05</span><span class="kicker-dot">·</span><span class="kicker-act">RESOLVE</span></p>
+        <h3 class="step-title">Isolation — the one thing you must never get wrong</h3>
+        <p class="narration" data-i18n="step-5" lang="en">This platform is single-tenant per deployment — branches are the internal multiplicity, NOT clients, and there is no client dimension in the schema. So two clients must never share state. Give each its own database (a shared MONGO_URI would merge two companies' books) and its own media namespace (S3_MEDIA_PREFIX, or a separate bucket) and a distinct auth secret. This is a provisioning rule, not a toggle — get it right before the first request lands.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">Isolation env (mandatory, distinct per client)</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Var</th><th>What it means</th><th>Rule</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>MONGO_URI</code></td><td>The client's database</td><td>Separate cluster or DB — NEVER shared</td></tr><tr><td class="rt-key"><code>S3_MEDIA_PREFIX</code></td><td>Media key namespace</td><td>Unique per client, or a separate bucket</td></tr><tr><td class="rt-key"><code>BETTER_AUTH_SECRET</code></td><td>Auth signing secret</td><td>Distinct per deployment; never reused</td></tr></tbody>
+        </table>
+      </div>
+      
+    </figure>
+      </div>
+    </article>
+
+    <article class="step step--result" id="step-6">
+      <div class="step-rail" aria-hidden="true">
+        <span class="pin">6</span>
+      </div>
+      <div class="step-body">
+        <p class="kicker"><span class="kicker-step">STEP 06</span><span class="kicker-dot">·</span><span class="kicker-act">RESULT</span></p>
+        <h3 class="step-title">Add a new country once — every client in it inherits it</h3>
+        <p class="narration" data-i18n="step-6" lang="en">Onboarding a NEW COUNTRY is the only code step, and it's shared across every client in that country. Add its money+calendar row to config/sections/locale.config.ts, register its chart+tax pack in resources/accounting/country-pack.ts, then set COUNTRY_PACK=&lt;XX&gt; in the deployment. A boot guard asserts the locale currency matches the ledger pack so the two can't drift. After that, standing up the 2nd, 3rd, Nth client in that country is pure .env — the whole point of the model.</p>
+        
+    <figure class="rt">
+      <figcaption class="rt-cap">New-country checklist (one-time, shared)</figcaption>
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr><th class="rt-key">Step</th><th>Where</th><th>What</th></tr></thead>
+          <tbody><tr><td class="rt-key"><code>1</code></td><td>config/sections/locale.config.ts</td><td>Add COUNTRY_LOCALE row: currency, timezone, fiscalYearStartMonth</td></tr><tr><td class="rt-key"><code>2</code></td><td>resources/accounting/country-pack.ts</td><td>Register the ledger pack + codes + tax resolver</td></tr><tr><td class="rt-key"><code>3</code></td><td>deployment .env</td><td>COUNTRY_PACK=&lt;XX&gt; (+ any per-client FEATURE_/CLIENT_ vars)</td></tr></tbody>
+        </table>
+      </div>
+      <p class="rt-note">Then every future client in &lt;XX&gt; is a .env file — no code. See be-prod/DEPLOYMENT.md for the full runbook + a worked .env.eternal.example.</p>
+    </figure>
+      </div>
+    </article>
+    </main>
+
+    <footer class="foot">
+      <p><span class="mono">Video / translation ready</span>Every step carries a single narration line, tagged <code>data-i18n</code> and mirrored in the embedded JSON below. Swap the <code>narration.en</code> strings for Bangla (or any locale) and drive a voiceover + screen-pan render straight from the step boxes.</p>
+      <span class="badge">deployment-config.v1 · 6 steps · EN</span>
+    </footer>
+  </div>
+</div>
+
+<script type="application/json" id="guide-steps">
+{
+  "module": "Deployment Config",
+  "slug": "deployment-config",
+  "branchContext": "Per-deployment .env",
+  "locales": [
+    "en"
+  ],
+  "steps": [
+    {
+      "id": "step-1",
+      "order": 1,
+      "action": "ORIENT",
+      "ui": "Four config seams — the whole differentiation surface",
+      "narration": {
+        "en": "A new client is a deployment config, not a fork. Four seams cover everything: LOCALIZATION (one switch sets currency, timezone, fiscal year, chart of accounts, and tax regime together), FEATURES (which modules boot), BRANDING (invoice/notification identity), and ISOLATION (never share a database or media store between clients). If you're editing a .ts file to onboard a client, stop — it belongs in .env or the PlatformConfig admin UI. The only code change to add a whole new COUNTRY is registering its pack (a shared capability, below), not per-client work."
+      },
+      "target": "one .env per client"
+    },
+    {
+      "id": "step-2",
+      "order": 2,
+      "action": "RESOLVE",
+      "ui": "Localization — set COUNTRY_PACK, inherit currency + timezone + fiscal year",
+      "narration": {
+        "en": "COUNTRY_PACK is the single localization switch. It selects the ledger's chart of accounts + tax pack AND drives the deployment's base currency, report timezone, and fiscal-year start (config.locale). Set only COUNTRY_PACK and inherit all three — BD → BDT / Asia-Dhaka / July; a US pack → USD / America-* / January. The per-field overrides exist only for the rare deployment that diverges from its country's norm (a BD company keeping books in USD). The timezone is VALIDATED at boot: an invalid IANA zone (a typo, or a POSIX name like GMT+6) fails the app to start rather than silently reporting every near-midnight transaction in UTC — 6h off Dhaka, into the wrong day/month/fiscal-year."
+      },
+      "target": "one switch localizes everything"
+    },
+    {
+      "id": "step-3",
+      "order": 3,
+      "action": "RESOLVE",
+      "ui": "Features — turn modules on, off, or to a tier",
+      "narration": {
+        "en": "Each module is gated by FEATURE_<ID>. A disabled feature registers ZERO routes and never boots its engine — it's not hidden, it's absent. `core` can't be disabled. FLOW_MODE separately sets warehouse depth: `simple` is basic stock; `standard` adds procurement, lots, packages, replenishment; `enterprise` adds waves, labor, traceability, and the depreciation auto-post cron. Tune these to the client's actual footprint — an online-only boutique runs FEATURE_POS=off, a 3PL runs FLOW_MODE=enterprise."
+      },
+      "target": "FEATURE_<ID> = tier | off"
+    },
+    {
+      "id": "step-4",
+      "order": 4,
+      "action": "RESOLVE",
+      "ui": "Branding — the client's name, without a code edit",
+      "narration": {
+        "en": "Backend-facing identity (invoice PDF header, notification 'from') is resolved entirely from CLIENT_* env — no source edit per client. Unset falls back to the BigBoss defaults, which double as the documentation of each var. Frontend branding (logo, theme, storefront chrome) is the Next.js app's own client.config, separate from these."
+      },
+      "target": "CLIENT_* env"
+    },
+    {
+      "id": "step-5",
+      "order": 5,
+      "action": "RESOLVE",
+      "ui": "Isolation — the one thing you must never get wrong",
+      "narration": {
+        "en": "This platform is single-tenant per deployment — branches are the internal multiplicity, NOT clients, and there is no client dimension in the schema. So two clients must never share state. Give each its own database (a shared MONGO_URI would merge two companies' books) and its own media namespace (S3_MEDIA_PREFIX, or a separate bucket) and a distinct auth secret. This is a provisioning rule, not a toggle — get it right before the first request lands."
+      },
+      "target": "one DB + one media store per client"
+    },
+    {
+      "id": "step-6",
+      "order": 6,
+      "action": "RESULT",
+      "ui": "Add a new country once — every client in it inherits it",
+      "narration": {
+        "en": "Onboarding a NEW COUNTRY is the only code step, and it's shared across every client in that country. Add its money+calendar row to config/sections/locale.config.ts, register its chart+tax pack in resources/accounting/country-pack.ts, then set COUNTRY_PACK=<XX> in the deployment. A boot guard asserts the locale currency matches the ledger pack so the two can't drift. After that, standing up the 2nd, 3rd, Nth client in that country is pure .env — the whole point of the model."
+      },
+      "target": "shared capability, not per-client"
+    }
+  ]
+}
+</script>

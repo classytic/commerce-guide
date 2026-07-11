@@ -12,7 +12,12 @@
       "tag": "HO-001 → MAIN",
       "narration": "Every transfer is a challan (delivery note) with a Route — a sender branch and a receiver branch — moving through create → approve → dispatch → receive. The route is the whole point: unlike a purchase (goods from a supplier) or a sale (goods to a customer), a transfer moves goods between two branches you own, so both sides of your own books must move.",
       "img": "screenshots/transfers-list.png",
-      "box": { "x": 488, "y": 185, "w": 340, "h": 290 }
+      "box": {
+        "x": 488,
+        "y": 185,
+        "w": 340,
+        "h": 290
+      }
     },
     {
       "action": "CLICK",
@@ -20,7 +25,12 @@
       "tag": "create → approve → dispatch → receive",
       "narration": "The detail shows the route, the line items, and who approved / dispatched / received it with timestamps. Approval is a hard gate: an incomplete approval chain returns 422 and dispatch is blocked. Nothing physical or financial has moved yet — approval only authorises the dispatch, exactly as a PO approval authorises receiving.",
       "img": "screenshots/transfers-detail.png",
-      "box": { "x": 385, "y": 125, "w": 863, "h": 120 }
+      "box": {
+        "x": 385,
+        "y": 125,
+        "w": 863,
+        "h": 120
+      }
     },
     {
       "action": "RESOLVE",
@@ -28,7 +38,12 @@
       "tag": "buildFlowContext(sender): stock → transit, quant−",
       "narration": "Dispatch runs in the SENDER's Flow context. An outbound moveGroup takes the units out of the sender's stock location into transit, and the sender's quant decrements. The goods have physically left but not yet arrived — this is the in-transit state. Note the actor + timestamp: DISPATCHED BY / DISPATCHED AT are stamped here.",
       "img": "screenshots/transfers-detail.png",
-      "box": { "x": 385, "y": 250, "w": 863, "h": 210 }
+      "box": {
+        "x": 385,
+        "y": 250,
+        "w": 863,
+        "h": 210
+      }
     },
     {
       "action": "RESOLVE",
@@ -36,7 +51,12 @@
       "tag": "buildFlowContext(receiver): transit → stock, quant+",
       "narration": "When the goods arrive, receive runs in the RECEIVER's Flow context — a second, separate context. An inbound moveGroup lands the units in the receiver's stock location and increments its quant. Why two contexts and not one? Because each branch is an isolated stock ledger (organizationId = branchId); you literally cannot touch the receiver's quant from the sender's scope. The status history records the full progression: Approved → Dispatched → Partial Received → Received.",
       "img": "screenshots/transfers-accounting.png",
-      "box": { "x": 385, "y": 378, "w": 863, "h": 150 }
+      "box": {
+        "x": 385,
+        "y": 378,
+        "w": 863,
+        "h": 150
+      }
     },
     {
       "action": "RESOLVE",
@@ -44,7 +64,12 @@
       "tag": "Dispatch: Dr 1179 / Cr 1164 · Receive: Dr 1164 / Cr 1179",
       "narration": "Each leg posts one JE, tagged with that leg's branch. DISPATCH (sender tag): Dr Inventory-in-Transit (1179) / Cr Merchandise (1164). RECEIVE (receiver tag): Dr Merchandise (1164) / Cr Inventory-in-Transit (1179). The 1179 clearing account holds the in-flight value between the two legs — that is what decouples them in time. Net company inventory is ZERO; only the per-branch DIMENSION shifted. This is the concrete reason the platform runs ONE ledger with a branch dimension rather than separate per-branch books: a transfer is not a sale, it just re-tags an asset from one branch to another.",
       "img": "screenshots/transfers-accounting.png",
-      "box": { "x": 385, "y": 305, "w": 863, "h": 60 }
+      "box": {
+        "x": 385,
+        "y": 305,
+        "w": 863,
+        "h": 60
+      }
     },
     {
       "action": "RESOLVE",
@@ -52,7 +77,25 @@
       "tag": "transit cost → 2126 · immutable reversal JEs",
       "narration": "If the transfer carries freight, that transit cost is capitalized into the receiver's inventory (IAS 2): Receive debits 1164 for goods + transit and credits 2126 Transfer Cost Clearing, which the host later clears against the carrier's actual invoice (Dr 2126 / Cr A/P). And if a dispatched transfer is cancelled, the system does not erase the posted entries — accounting convention is that posted JEs are immutable — it posts NEW reversing entries so both branches' books unwind, with the audit trail showing the original and its reversal side by side.",
       "img": "screenshots/transfers-accounting.png",
-      "box": { "x": 385, "y": 378, "w": 863, "h": 150 }
+      "box": {
+        "x": 385,
+        "y": 378,
+        "w": 863,
+        "h": 150
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Print the delivery challan",
+      "tag": "Print Challan",
+      "narration": "Every transfer prints a delivery challan straight from the row menu — the transport document that travels with the goods (and the paper trail NBR expects when stock moves between premises). The document is composed on Fluid's print kit: header with the challan number and date, consignor (From) and consignee (To) parties resolved to branch names — never bare IDs on a legal document — unpriced line items with quantities, a total-quantity summary, and sender/receiver signature blocks. Print or save to PDF from the same dialog; the challan number ties the paper back to this transfer's audit trail.",
+      "img": "screenshots/transfers-challan-print.png",
+      "box": {
+        "x": 300,
+        "y": 60,
+        "w": 660,
+        "h": 480
+      }
     }
   ]
 }

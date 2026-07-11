@@ -14,15 +14,55 @@
       <h1>Learn the platform, one flow at a time.</h1>
       <p class="lede">Click-by-click visual walkthroughs of the admin dashboard, captured live from the running app. Each guide traces one business flow end to end — what to click, what the system does underneath, and which journals it books.</p>
       <div class="meta-row">
-        <span class="chip"><b>21</b> guides</span>
-        <span class="chip"><b>136</b> annotated steps</span>
+        <span class="chip"><b>25</b> guides</span>
+        <span class="chip"><b>170</b> annotated steps</span>
         <span class="chip"><span class="ring"></span> callout = where to click</span>
         <span class="chip"><b>EN</b> · translation-ready</span>
       </div>
     </header>
 
+    <section class="cat" id="setup">
+      <div class="cat-head"><h2>Setup — Deploy &amp; Configure</h2><span class="count">1 guide</span></div>
+      <p class="cat-blurb">One codebase, one client per deployment — differentiated only by environment. The env vars that localize money + calendar, gate modules, brand the app, and isolate each client's data.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/deployment-config/deployment-config.html">
+          <div class="thumb"></div>
+          <div class="card-body">
+            <p class="card-kicker">Operations · Setup</p>
+            <h3>Deployment Config</h3>
+            <p>One codebase, one client per deployment — differentiated ONLY by environment. This is the short reference for the env vars that stand up a new client (BigBoss, Eternal, a US store …) without touching source: what localizes the money + calendar, what turns modules on/off, what sets the brand, and what MUST be isolated. Set these in the deployment's .env; everything else client-specific is data you seed in the admin UI. Full runbook: be-prod/DEPLOYMENT.md.</p>
+            <div class="card-meta">
+              <span class="steps-pill">6</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section class="cat" id="golive">
+      <div class="cat-head"><h2>Go Live — Onboard Your Business</h2><span class="count">1 guide</span></div>
+      <p class="cat-blurb">The cutover playbook: master data, opening stock, opening balances, existing assets — every entry offsetting one equity account so the trial balance proves the migration.</p>
+      <div class="grid">
+
+        <a class="card" href="modules/go-live-onboarding/go-live-onboarding.html">
+          <div class="thumb"><img src="modules/go-live-onboarding/screenshots/launcher-features.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Tutorial · Migration → Opening entries → First close</p>
+            <h3>Go-Live — Onboarding an Existing Business</h3>
+            <p>The complete cutover playbook for moving a live business onto the platform: master data first, then opening transactions, then verification — the same sequence Odoo, ERPNext, and Business Central prescribe. Every opening entry offsets ONE equity account (3310 Retained Earnings), so when the trial balance ties out you know the migration is complete. Nothing here books income: opening stock, opening receivables, and migrated assets are history the new system inherits, not activity it earned.</p>
+            <div class="card-meta">
+              <span class="steps-pill">14</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </section>
+
     <section class="cat" id="sell">
-      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">7 guides</span></div>
+      <div class="cat-head"><h2>Sell — POS, Orders &amp; Growth</h2><span class="count">8 guides</span></div>
       <p class="cat-blurb">Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.</p>
       <div class="grid">
 
@@ -99,6 +139,19 @@
             <p>One catalog, many prices. A PRICE LIST is a named set of rules that reprices products for a customer segment — wholesale buyers, a specific channel, or volume orders — without cloning the catalog. Each rule carries a SCOPE (all / category / product / variant), a COMPUTATION (fixed price, % discount, or formula), a minimum-quantity gate, and a priority. At order time the pricing bridge finds every rule that matches the line, sorts them deterministically, and applies the winner. Captured live: a wholesale list that takes 15% off any product when the customer buys 5 or more.</p>
             <div class="card-meta">
               <span class="steps-pill">5</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
+        <a class="card" href="modules/dealer-pricing/dealer-pricing.html">
+          <div class="thumb"><img src="modules/dealer-pricing/screenshots/dealer-list.png" alt="" loading="lazy" decoding="async" /></div>
+          <div class="card-body">
+            <p class="card-kicker">Sell · Pricing rules</p>
+            <h3>Dealer &amp; Wholesale Pricing</h3>
+            <p>Dealers and wholesale buyers don't pay retail. A price list is a stack of RULES the pricing engine walks at add-to-cart time — cost-plus markup, %-off-list tiers, volume brackets — resolved deterministically by scope and quantity. This guide builds the classic dealer rule: Cost Price + 30%, the same 'landed cost plus margin' every distributor uses, with the account's own cost as the base so the margin holds even as purchase prices move.</p>
+            <div class="card-meta">
+              <span class="steps-pill">4</span> steps
               <span class="open">Open guide →</span>
             </div>
           </div>
@@ -216,7 +269,7 @@
             <h3>Inter-branch Transfers</h3>
             <p>A transfer is the only operation that touches TWO branches at once — and it exposes the whole architecture. Because Flow is per-branch isolated (organizationId = branchId), moving stock needs DUAL contexts: one to decrement the sender, another to increment the receiver. And because accounting is a SINGLE company ledger with branch as a dimension, the same movement posts a PAIR of journal entries bridged by an in-transit clearing account — company inventory never changes, only the branch tag does. Follow one challan from dispatch to receive.</p>
             <div class="card-meta">
-              <span class="steps-pill">6</span> steps
+              <span class="steps-pill">7</span> steps
               <span class="open">Open guide →</span>
             </div>
           </div>
@@ -251,7 +304,7 @@
     </section>
 
     <section class="cat" id="books">
-      <div class="cat-head"><h2>Books — Accounting &amp; Tax</h2><span class="count">5 guides</span></div>
+      <div class="cat-head"><h2>Books — Accounting &amp; Tax</h2><span class="count">6 guides</span></div>
       <p class="cat-blurb">The single company-wide ledger: chart of accounts, receivables/payables aging, VAT + withholding, and closing the period.</p>
       <div class="grid">
 
@@ -307,6 +360,19 @@
           </div>
         </a>
 
+        <a class="card" href="modules/accounting-integrity/accounting-integrity.html">
+          <div class="thumb"></div>
+          <div class="card-body">
+            <p class="card-kicker">Accounting · Integrity</p>
+            <h3>Accounting Integrity</h3>
+            <p>Four places where an ERP quietly lies about money — and how this ledger is built so it can't. A set of books has integrity when three things always hold: every entry balances (Dr = Cr), every real-world event that moves value posts SOMETHING, and the general ledger agrees with the subledgers and the warehouse. Most systems break one of these silently: they bury tax inside revenue, value a stock transfer at zero because nobody typed a cost, or let a warehouse move happen while the matching journal sits unposted. This guide follows the actual postings behind four such traps — a B2B invoice, an inter-branch transfer, a stock adjustment, and a correction — and shows the resolver logic that closes each. Every Dr/Cr below is the real posting the pipeline emits; account codes are the Bangladesh chart (country-pack resolved — swap the pack and the codes change, the logic doesn't).</p>
+            <div class="card-meta">
+              <span class="steps-pill">9</span> steps
+              <span class="open">Open guide →</span>
+            </div>
+          </div>
+        </a>
+
         <a class="card" href="modules/period-close/period-close.html">
           <div class="thumb"><img src="modules/period-close/screenshots/close-wizard.png" alt="" loading="lazy" decoding="async" /></div>
           <div class="card-body">
@@ -324,7 +390,7 @@
 
     <footer class="foot">
       <p><span class="mono">How these are made</span>Every guide is a single self-contained HTML file built from live screenshots (<code>tools/build-doc.js</code>). Narration lines are tagged for translation, so the same steps can drive Bangla (or any locale) voiceover video renders.</p>
-      <span class="badge">commerce-guides · 21 modules · 136 steps</span>
+      <span class="badge">commerce-guides · 25 modules · 170 steps</span>
     </footer>
   </div>
 </body>

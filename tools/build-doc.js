@@ -49,15 +49,21 @@ const ACTION_META = {
 };
 
 const steps = spec.steps.map((s, i) => {
-  const im = img(s.img);
-  const b = s.box;
-  const pct = {
-    left: (b.x / im.w) * 100,
-    top: (b.y / im.h) * 100,
-    w: (b.w / im.w) * 100,
-    h: (b.h / im.h) * 100,
-  };
-  return { ...s, n: i + 1, im, pct, meta: ACTION_META[s.action] || ACTION_META.CLICK };
+  // A step is EITHER screenshot-backed (img + box) OR a ledger-trace block
+  // (s.ledger — a journal-entry posting table). Accounting flows are money
+  // movement, not clicks; a Dr/Cr table shows the truth a screenshot can't.
+  if (s.img) {
+    const im = img(s.img);
+    const b = s.box;
+    const pct = {
+      left: (b.x / im.w) * 100,
+      top: (b.y / im.h) * 100,
+      w: (b.w / im.w) * 100,
+      h: (b.h / im.h) * 100,
+    };
+    return { ...s, n: i + 1, im, pct, meta: ACTION_META[s.action] || ACTION_META.CLICK };
+  }
+  return { ...s, n: i + 1, meta: ACTION_META[s.action] || ACTION_META.CLICK };
 });
 
 // ---- flow map --------------------------------------------------------------
@@ -71,13 +77,97 @@ const flowMap = steps
   )
   .join('<li class="flow-arrow" aria-hidden="true">→</li>');
 
+// ---- ledger figure (journal-entry posting table) --------------------------
+// Renders a Dr/Cr trace in place of a screenshot for accounting-flow steps.
+// `ledger`: { title, lines: [{code,name,dr,cr}], note?, totals?:{dr,cr} }.
+function ledgerFigure(l) {
+  const rows = (l.lines || [])
+    .map(
+      (r) => `
+        <tr>
+          <td class="je-code">${esc(r.code || "")}</td>
+          <td class="je-name">${esc(r.name || "")}</td>
+          <td class="je-amt je-dr">${r.dr ? esc(String(r.dr)) : ""}</td>
+          <td class="je-amt je-cr">${r.cr ? esc(String(r.cr)) : ""}</td>
+        </tr>`
+    )
+    .join("");
+  const totals =
+    l.totals && (l.totals.dr || l.totals.cr)
+      ? `<tfoot><tr>
+           <td></td><td class="je-total-label">Balanced</td>
+           <td class="je-amt je-dr">${esc(String(l.totals.dr || ""))}</td>
+           <td class="je-amt je-cr">${esc(String(l.totals.cr || ""))}</td>
+         </tr></tfoot>`
+      : "";
+  return `
+    <figure class="je">
+      ${l.title ? `<figcaption class="je-cap">${esc(l.title)}</figcaption>` : ""}
+      <table class="je-table">
+        <thead><tr><th>Code</th><th>Account</th><th class="je-amt">Debit</th><th class="je-amt">Credit</th></tr></thead>
+        <tbody>${rows}</tbody>
+        ${totals}
+      </table>
+      ${l.note ? `<p class="je-note">${esc(l.note)}</p>` : ""}
+    </figure>`;
+}
+
+// ---- table figure (reference / config table) ------------------------------
+// Renders a headed table in place of a screenshot for reference steps (env vars,
+// config knobs, permission matrices). `table`: { title?, columns:[...],
+// rows:[[...]], note? }. The FIRST cell of each row renders as a code/key.
+function tableFigure(t) {
+  const head = (t.columns || [])
+    .map((c, i) => `<th${i === 0 ? ' class="rt-key"' : ""}>${esc(String(c))}</th>`)
+    .join("");
+  const body = (t.rows || [])
+    .map(
+      (row) =>
+        `<tr>${row
+          .map((cell, i) =>
+            i === 0
+              ? `<td class="rt-key"><code>${esc(String(cell))}</code></td>`
+              : `<td>${esc(String(cell))}</td>`
+          )
+          .join("")}</tr>`
+    )
+    .join("");
+  return `
+    <figure class="rt">
+      ${t.title ? `<figcaption class="rt-cap">${esc(t.title)}</figcaption>` : ""}
+      <div class="rt-scroll">
+        <table class="rt-table">
+          <thead><tr>${head}</tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+      ${t.note ? `<p class="rt-note">${esc(t.note)}</p>` : ""}
+    </figure>`;
+}
+
 // ---- step cards ------------------------------------------------------------
 const stepCards = steps
   .map((s) => {
-    // pin sits at the box's top-left, nudged out; if the box hugs the top edge,
-    // drop the pin just inside so it never clips off the figure.
-    const pinTop = s.pct.top < 6 ? s.pct.top + 0.5 : s.pct.top;
-    const labelBelow = s.pct.top < 12; // put the floating label under boxes near the top
+    let figure;
+    if (s.ledger) {
+      figure = ledgerFigure(s.ledger);
+    } else if (s.table) {
+      figure = tableFigure(s.table);
+    } else {
+      // pin sits at the box's top-left, nudged out; if the box hugs the top edge,
+      // drop the pin just inside so it never clips off the figure.
+      const pinTop = s.pct.top < 6 ? s.pct.top + 0.5 : s.pct.top;
+      const labelBelow = s.pct.top < 12; // put the floating label under boxes near the top
+      figure = `
+        <figure class="shot">
+          <div class="shot-frame" style="aspect-ratio:${s.im.w} / ${s.im.h}">
+            <img src="${s.im.uri}" alt="${esc(s.title)}" loading="lazy" decoding="async" width="${s.im.w}" height="${s.im.h}" />
+            <span class="callout" style="left:${s.pct.left.toFixed(3)}%;top:${pinTop.toFixed(3)}%;width:${s.pct.w.toFixed(3)}%;height:${s.pct.h.toFixed(3)}%"></span>
+            <span class="callout-pin" style="left:${s.pct.left.toFixed(3)}%;top:${pinTop.toFixed(3)}%">${s.n}</span>
+            <span class="callout-tag ${labelBelow ? "callout-tag--below" : ""}" style="left:${s.pct.left.toFixed(3)}%;top:${labelBelow ? (pinTop + s.pct.h).toFixed(3) : pinTop.toFixed(3)}%">${esc(s.tag || s.meta.verb)}</span>
+          </div>
+        </figure>`;
+    }
     return `
     <article class="step step--${s.meta.c}" id="step-${s.n}">
       <div class="step-rail" aria-hidden="true">
@@ -87,14 +177,7 @@ const stepCards = steps
         <p class="kicker"><span class="kicker-step">STEP ${String(s.n).padStart(2, "0")}</span><span class="kicker-dot">·</span><span class="kicker-act">${s.action}</span></p>
         <h3 class="step-title">${esc(s.title)}</h3>
         <p class="narration" data-i18n="step-${s.n}" lang="en">${esc(s.narration)}</p>
-        <figure class="shot">
-          <div class="shot-frame" style="aspect-ratio:${s.im.w} / ${s.im.h}">
-            <img src="${s.im.uri}" alt="${esc(s.title)}" loading="lazy" decoding="async" width="${s.im.w}" height="${s.im.h}" />
-            <span class="callout" style="left:${s.pct.left.toFixed(3)}%;top:${pinTop.toFixed(3)}%;width:${s.pct.w.toFixed(3)}%;height:${s.pct.h.toFixed(3)}%"></span>
-            <span class="callout-pin" style="left:${s.pct.left.toFixed(3)}%;top:${pinTop.toFixed(3)}%">${s.n}</span>
-            <span class="callout-tag ${labelBelow ? "callout-tag--below" : ""}" style="left:${s.pct.left.toFixed(3)}%;top:${labelBelow ? (pinTop + s.pct.h).toFixed(3) : pinTop.toFixed(3)}%">${esc(s.tag || s.meta.verb)}</span>
-          </div>
-        </figure>
+        ${figure}
       </div>
     </article>`;
   })
@@ -223,6 +306,37 @@ h1{
   width:100%;
 }
 .shot-frame img{display:block;width:100%;height:auto}
+/* ---------- ledger (journal-entry) figure ---------- */
+.je{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:0 1px 2px rgba(22,24,29,.05),0 12px 28px rgba(22,24,29,.09)}
+.je-cap{font-weight:650;font-size:.92rem;color:var(--ink);padding:14px 18px 10px;
+  border-bottom:1px solid var(--line);letter-spacing:-.01em}
+.je-table{width:100%;border-collapse:collapse;font-size:.9rem}
+.je-table thead th{text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mute);padding:10px 18px;background:var(--paper-2)}
+.je-table th.je-amt,.je-table td.je-amt{text-align:right;font-variant-numeric:tabular-nums}
+.je-table tbody td{padding:9px 18px;border-top:1px solid var(--line);color:var(--ink-soft)}
+.je-code{font-family:ui-monospace,"SF Mono",Menlo,monospace;color:var(--steel);font-weight:600}
+.je-name{color:var(--ink)}
+.je-dr{color:var(--signal-ink);font-weight:600}
+.je-cr{color:var(--result);font-weight:600}
+.je-table tfoot td{padding:10px 18px;border-top:2px solid var(--ink-soft);font-weight:700;background:var(--paper)}
+.je-total-label{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.je-note{margin:0;padding:12px 18px;font-size:.85rem;color:var(--mute);border-top:1px dashed var(--line);background:var(--paper-2)}
+/* ---------- reference / config table figure ---------- */
+.rt{margin:0;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:0 1px 2px rgba(22,24,29,.05),0 12px 28px rgba(22,24,29,.09)}
+.rt-cap{font-weight:650;font-size:.92rem;color:var(--ink);padding:14px 18px 10px;
+  border-bottom:1px solid var(--line);letter-spacing:-.01em}
+.rt-scroll{overflow-x:auto}
+.rt-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.rt-table thead th{text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--mute);padding:10px 18px;background:var(--paper-2);white-space:nowrap}
+.rt-table tbody td{padding:9px 18px;border-top:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+.rt-table td.rt-key,.rt-table th.rt-key{white-space:nowrap}
+.rt-table code{font-family:ui-monospace,"SF Mono",Menlo,monospace;font-size:.82rem;
+  color:var(--steel);font-weight:600;background:var(--paper);padding:2px 6px;border-radius:5px}
+.rt-note{margin:0;padding:12px 18px;font-size:.85rem;color:var(--mute);border-top:1px dashed var(--line);background:var(--paper-2)}
 .callout{
   position:absolute;border-radius:7px;
   border:2.5px solid var(--signal);

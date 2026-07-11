@@ -1,0 +1,112 @@
+{
+  "module": "Deployment Config",
+  "slug": "deployment-config",
+  "section": "Operations · Setup",
+  "branchContext": "Per-deployment .env",
+  "lede": "One codebase, one client per deployment — differentiated ONLY by environment. This is the short reference for the env vars that stand up a new client (BigBoss, Eternal, a US store …) without touching source: what localizes the money + calendar, what turns modules on/off, what sets the brand, and what MUST be isolated. Set these in the deployment's .env; everything else client-specific is data you seed in the admin UI. Full runbook: be-prod/DEPLOYMENT.md.",
+  "out": "deployment-config.html",
+  "steps": [
+    {
+      "action": "ORIENT",
+      "title": "Four config seams — the whole differentiation surface",
+      "tag": "one .env per client",
+      "narration": "A new client is a deployment config, not a fork. Four seams cover everything: LOCALIZATION (one switch sets currency, timezone, fiscal year, chart of accounts, and tax regime together), FEATURES (which modules boot), BRANDING (invoice/notification identity), and ISOLATION (never share a database or media store between clients). If you're editing a .ts file to onboard a client, stop — it belongs in .env or the PlatformConfig admin UI. The only code change to add a whole new COUNTRY is registering its pack (a shared capability, below), not per-client work.",
+      "table": {
+        "title": "The four seams",
+        "columns": ["Seam", "Set via", "Controls"],
+        "rows": [
+          ["COUNTRY_PACK", "env", "Currency + timezone + fiscal year + chart of accounts + tax regime — all together"],
+          ["FEATURE_<ID>", "env", "Which modules boot (off = zero routes/engine). e.g. FEATURE_POS=off"],
+          ["FLOW_MODE", "env", "Warehouse/WMS depth: simple | standard | enterprise"],
+          ["CLIENT_*", "env", "Brand identity on invoices + notifications"],
+          ["MONGO_URI · S3_MEDIA_PREFIX", "env", "Per-client isolation — MANDATORY, never shared"]
+        ],
+        "note": "Defaults keep the flagship BigBoss deployment working when a var is unset; each is documented inline in .env.example."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Localization — set COUNTRY_PACK, inherit currency + timezone + fiscal year",
+      "tag": "one switch localizes everything",
+      "narration": "COUNTRY_PACK is the single localization switch. It selects the ledger's chart of accounts + tax pack AND drives the deployment's base currency, report timezone, and fiscal-year start (config.locale). Set only COUNTRY_PACK and inherit all three — BD → BDT / Asia-Dhaka / July; a US pack → USD / America-* / January. The per-field overrides exist only for the rare deployment that diverges from its country's norm (a BD company keeping books in USD). The timezone is VALIDATED at boot: an invalid IANA zone (a typo, or a POSIX name like GMT+6) fails the app to start rather than silently reporting every near-midnight transaction in UTC — 6h off Dhaka, into the wrong day/month/fiscal-year.",
+      "table": {
+        "title": "Localization env",
+        "columns": ["Var", "What it means", "Default"],
+        "rows": [
+          ["COUNTRY_PACK", "Country localization key (ISO-2). Selects chart + tax + money + calendar.", "BD"],
+          ["BASE_CURRENCY", "Override the pack's currency (ISO 4217). Rarely needed.", "pack default (BD → BDT)"],
+          ["ACCOUNTING_TIMEZONE", "Override the business timezone (IANA). Boot-validated.", "pack default (BD → Asia/Dhaka)"],
+          ["FISCAL_YEAR_START_MONTH", "Override fiscal-year start month (1-12).", "pack default (BD → 7 / July)"]
+        ],
+        "note": "Adding a whole new country = add a locale row + register its accounting pack (see the last step). Not per-client work."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Features — turn modules on, off, or to a tier",
+      "tag": "FEATURE_<ID> = tier | off",
+      "narration": "Each module is gated by FEATURE_<ID>. A disabled feature registers ZERO routes and never boots its engine — it's not hidden, it's absent. `core` can't be disabled. FLOW_MODE separately sets warehouse depth: `simple` is basic stock; `standard` adds procurement, lots, packages, replenishment; `enterprise` adds waves, labor, traceability, and the depreciation auto-post cron. Tune these to the client's actual footprint — an online-only boutique runs FEATURE_POS=off, a 3PL runs FLOW_MODE=enterprise.",
+      "table": {
+        "title": "Feature + mode env",
+        "columns": ["Var", "Values", "Example use"],
+        "rows": [
+          ["FEATURE_ACCOUNTING", "basic | standard | enterprise | off", "off for a shop that keeps books elsewhere"],
+          ["FEATURE_POS", "standard | off", "off for an online-only business"],
+          ["FEATURE_LOYALTY", "standard | off", "off if no points/tiers programme"],
+          ["FEATURE_ASSETS", "standard | enterprise | off", "off if no fixed-asset register"],
+          ["FEATURE_CRM", "basic | standard | off", "basic = contacts only, no pipeline"],
+          ["FLOW_MODE", "simple | standard | enterprise", "enterprise for a 3PL warehouse"]
+        ],
+        "note": "Full list of FEATURE_<ID> ids is in .env.example; unknown values warn + are ignored (core is immune)."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Branding — the client's name, without a code edit",
+      "tag": "CLIENT_* env",
+      "narration": "Backend-facing identity (invoice PDF header, notification 'from') is resolved entirely from CLIENT_* env — no source edit per client. Unset falls back to the BigBoss defaults, which double as the documentation of each var. Frontend branding (logo, theme, storefront chrome) is the Next.js app's own client.config, separate from these.",
+      "table": {
+        "title": "Branding env",
+        "columns": ["Var", "What it means", "Example"],
+        "rows": [
+          ["CLIENT_NAME", "Short brand name (emails, invoice header)", "Eternal Ceramics"],
+          ["CLIENT_LEGAL_NAME", "Legal entity (invoices, tax filings)", "Eternal Ceramics Ltd."],
+          ["CLIENT_SUPPORT_EMAIL", "Support address on documents", "support@eternalceramics.com"],
+          ["CLIENT_LOGO_URL", "Logo used on generated invoices", "https://…/logo.svg"],
+          ["CLIENT_STOREFRONT_URL", "Public storefront URL", "https://eternalceramics.com"]
+        ]
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Isolation — the one thing you must never get wrong",
+      "tag": "one DB + one media store per client",
+      "narration": "This platform is single-tenant per deployment — branches are the internal multiplicity, NOT clients, and there is no client dimension in the schema. So two clients must never share state. Give each its own database (a shared MONGO_URI would merge two companies' books) and its own media namespace (S3_MEDIA_PREFIX, or a separate bucket) and a distinct auth secret. This is a provisioning rule, not a toggle — get it right before the first request lands.",
+      "table": {
+        "title": "Isolation env (mandatory, distinct per client)",
+        "columns": ["Var", "What it means", "Rule"],
+        "rows": [
+          ["MONGO_URI", "The client's database", "Separate cluster or DB — NEVER shared"],
+          ["S3_MEDIA_PREFIX", "Media key namespace", "Unique per client, or a separate bucket"],
+          ["BETTER_AUTH_SECRET", "Auth signing secret", "Distinct per deployment; never reused"]
+        ]
+      }
+    },
+    {
+      "action": "RESULT",
+      "title": "Add a new country once — every client in it inherits it",
+      "tag": "shared capability, not per-client",
+      "narration": "Onboarding a NEW COUNTRY is the only code step, and it's shared across every client in that country. Add its money+calendar row to config/sections/locale.config.ts, register its chart+tax pack in resources/accounting/country-pack.ts, then set COUNTRY_PACK=<XX> in the deployment. A boot guard asserts the locale currency matches the ledger pack so the two can't drift. After that, standing up the 2nd, 3rd, Nth client in that country is pure .env — the whole point of the model.",
+      "table": {
+        "title": "New-country checklist (one-time, shared)",
+        "columns": ["Step", "Where", "What"],
+        "rows": [
+          ["1", "config/sections/locale.config.ts", "Add COUNTRY_LOCALE row: currency, timezone, fiscalYearStartMonth"],
+          ["2", "resources/accounting/country-pack.ts", "Register the ledger pack + codes + tax resolver"],
+          ["3", "deployment .env", "COUNTRY_PACK=<XX> (+ any per-client FEATURE_/CLIENT_ vars)"]
+        ],
+        "note": "Then every future client in <XX> is a .env file — no code. See be-prod/DEPLOYMENT.md for the full runbook + a worked .env.eternal.example."
+      }
+    }
+  ]
+}

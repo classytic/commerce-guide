@@ -17,10 +17,22 @@ const esc = (s) =>
 // Curated categories (order = page order). A slug missing here lands in "More".
 const CATEGORIES = [
   {
+    id: "setup",
+    title: "Setup — Deploy & Configure",
+    blurb: "One codebase, one client per deployment — differentiated only by environment. The env vars that localize money + calendar, gate modules, brand the app, and isolate each client's data.",
+    slugs: ["deployment-config"],
+  },
+  {
+    id: "golive",
+    title: "Go Live — Onboard Your Business",
+    blurb: "The cutover playbook: master data, opening stock, opening balances, existing assets — every entry offsetting one equity account so the trial balance proves the migration.",
+    slugs: ["go-live-onboarding"],
+  },
+  {
     id: "sell",
     title: "Sell — POS, Orders & Growth",
     blurb: "Ring up sales at the register, take online orders through fulfilment, and run the levers that bring customers back.",
-    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points", "pricelist-rules", "platform-marketing-pixels"],
+    slugs: ["pos-register", "sales-orders", "returns-rma", "promotions-coupons", "loyalty-points", "pricelist-rules", "dealer-pricing", "platform-marketing-pixels"],
   },
   {
     id: "buy",
@@ -45,7 +57,7 @@ const CATEGORIES = [
     id: "books",
     title: "Books — Accounting & Tax",
     blurb: "The single company-wide ledger: chart of accounts, receivables/payables aging, VAT + withholding, and closing the period.",
-    slugs: ["accounting-chart-of-accounts", "transactions-cashbook", "ar-ap-aging", "invoice-tax-withholding", "period-close"],
+    slugs: ["accounting-chart-of-accounts", "transactions-cashbook", "ar-ap-aging", "invoice-tax-withholding", "accounting-integrity", "period-close"],
   },
 ];
 

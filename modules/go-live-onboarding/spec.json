@@ -1,0 +1,192 @@
+{
+  "module": "Go-Live — Onboarding an Existing Business",
+  "slug": "go-live-onboarding",
+  "section": "Tutorial · Migration → Opening entries → First close",
+  "branchContext": "Head Office (HO-001), Company-wide masters",
+  "lede": "The complete cutover playbook for moving a live business onto the platform: master data first, then opening transactions, then verification — the same sequence Odoo, ERPNext, and Business Central prescribe. Every opening entry offsets ONE equity account (3310 Retained Earnings), so when the trial balance ties out you know the migration is complete. Nothing here books income: opening stock, opening receivables, and migrated assets are history the new system inherits, not activity it earned.",
+  "out": "go-live-onboarding.html",
+  "steps": [
+    {
+      "action": "ORIENT",
+      "title": "Confirm which modules this deployment runs",
+      "tag": "deployment.config.ts",
+      "narration": "Features are declared in the deployment contract (deployment.config.ts) — the git-reviewed equivalent of installing apps in Odoo. A key that is absent boots no engine and registers no routes: a service company removes inventory/warehouse/pos entirely. For this tutorial the deployment enables core, inventory, accounting, and assets. Verify with GET /features — the launcher and sidebar mirror exactly this list.",
+      "img": "screenshots/launcher-features.png",
+      "box": {
+        "x": 288,
+        "y": 60,
+        "w": 960,
+        "h": 470
+      }
+    },
+    {
+      "action": "NAVIGATE",
+      "title": "Verify the chart of accounts is seeded",
+      "tag": "Accounting → Chart of Accounts",
+      "narration": "Finance config comes before any data — the BFRS chart must exist before a single opening entry posts. Confirm the accounts every opening flow touches: 1164 Merchandise, 1141 A/R, 2111 A/P, 3310 Retained Earnings, the 13xx PPE accounts, 1359 Accumulated Depreciation, and the 66xx depreciation expense family. If the chart is empty, run Seed Accounts once — every posting contract resolves accounts by these codes.",
+      "img": "screenshots/chart-of-accounts.png",
+      "box": {
+        "x": 313,
+        "y": 295,
+        "w": 910,
+        "h": 265
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Import suppliers in one batch",
+      "tag": "Suppliers → Import",
+      "narration": "The console is a spreadsheet — type rows directly, or click 'CSV template' to download a pre-headered file, fill it in Excel, and 'Upload CSV' to load it back for review (up to 500 rows per batch). Nothing imports until you press Import batch. The import returns a per-row report — a duplicate code fails ITS row only and names the row index, so a retry file contains exactly the failures. Suppliers are company-wide master data (no branch scoping); the code you assign here is what purchase orders and the A/P ledger display forever.",
+      "img": "screenshots/supplier-import.png",
+      "box": {
+        "x": 341,
+        "y": 250,
+        "w": 854,
+        "h": 240
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Read the import report — fix rows, not batches",
+      "tag": "Per-row report",
+      "narration": "The response splits created[] and failed[] with the failing row's index and the validator's message. This is Odoo base_import semantics: one bad row never poisons the batch. Import proceeds row-by-row through the repository deliberately — batch inserts skip the model's pre-save hooks, which would corrupt normalized lookup fields.",
+      "img": "screenshots/supplier-import-report.png",
+      "box": {
+        "x": 341,
+        "y": 423,
+        "w": 854,
+        "h": 60
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Import the product catalog with cost prices",
+      "tag": "Products → Import",
+      "narration": "Same spreadsheet flow. Sell Price and Cost Price are entered in normal currency (major units) — the console converts to the wire's integer minor units for you. Cost lands on the canonical monetization slot — the exact field the order pipeline freezes into every order line at placement. Seed cost NOW or your first sales post zero COGS and the profit dashboard flags cost-missing lines until finance backfills.",
+      "img": "screenshots/product-import.png",
+      "box": {
+        "x": 341,
+        "y": 250,
+        "w": 854,
+        "h": 240
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Slugs and cost landed with the products",
+      "tag": "Import report",
+      "narration": "Each created row returns its derived slug — proof the catalog's pre-save pipeline ran per product (a raw batch insert would have skipped it and shipped slug-less products to the storefront). Spot-check one product: Basic tab shows the sell price, and the cost price sits under monetization ready for the COGS bridge.",
+      "img": "screenshots/product-import-report.png",
+      "box": {
+        "x": 341,
+        "y": 423,
+        "w": 854,
+        "h": 60
+      }
+    },
+    {
+      "action": "TYPE",
+      "title": "Load opening stock quantities — as OPENING, not gain",
+      "tag": "Inventory → Bulk Import · opening: true",
+      "narration": "Each row sets the physical count for a product (the console sends mode 'set' with the opening flag); Flow opens a cost layer from the product's cost price. The opening flag is the accounting difference: Dr 1164 Merchandise / Cr 3310 Retained Earnings. WITHOUT it a stock increase books as a cycle-count gain — Cr 4317 Other Income — and your first month's P&L shows the entire migrated stock value as profit. Opening stock is inherited history, never income.",
+      "img": "screenshots/opening-stock-import.png",
+      "box": {
+        "x": 341,
+        "y": 250,
+        "w": 854,
+        "h": 240
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "The opening-stock journal entry",
+      "tag": "Dr 1164 / Cr 3310",
+      "narration": "Accounting → Journal Entries shows one INVENTORY entry per imported line: Debit 1164 Merchandise, Credit 3310 Retained Earnings, labeled 'Opening stock'. It lands as a DRAFT — finance reviews and posts, the same gate the partner opening balances use. Cost & Valuation now reports the same total the entry debited: inventory sub-ledger and GL agree from minute one.",
+      "img": "screenshots/opening-stock-je.png",
+      "box": {
+        "x": 300,
+        "y": 200,
+        "w": 940,
+        "h": 320
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Open each customer and supplier balance",
+      "tag": "Partner → open-balance action",
+      "narration": "For every customer who owes you: POST /accounting/partners/:id/action { action: 'open-balance', side: 'customer', amount } → Dr 1141 A/R [partner] / Cr 3310. For every supplier you owe: side 'supplier' → Dr 3310 / Cr 2111 A/P [partner]. Amounts are positive integer paisa; the entry dates to Dec 31 of last year so partner-ledger queries show it as opening. Idempotent per (side, partner) — running the migration script twice cannot double an opening balance.",
+      "img": "screenshots/partner-opening-balance.png",
+      "box": {
+        "x": 300,
+        "y": 150,
+        "w": 940,
+        "h": 380
+      }
+    },
+    {
+      "action": "TYPE",
+      "title": "Load the remaining trial balance in one call",
+      "tag": "Journal Entries → Opening Balance",
+      "narration": "Enter the migrating trial balance as it stands — bank balances, loans, prepaid rent, whatever remains — one side (debit OR credit) per row, in normal currency; the residual auto-offsets to 3310 Retained Earnings so the entry ALWAYS balances. Lines may not target 3310 directly (the residual owns that side — a manual RE line would double-count). Unknown account codes are rejected by name before anything posts. Idempotent per batchRef.",
+      "img": "screenshots/general-opening-balance.png",
+      "box": {
+        "x": 341,
+        "y": 250,
+        "w": 854,
+        "h": 240
+      }
+    },
+    {
+      "action": "CLICK",
+      "title": "Onboard existing fixed assets — the net method",
+      "tag": "Fixed Assets → Onboard Existing",
+      "narration": "For a 3-year-old delivery van: original cost, depreciation already taken, salvage value, original in-service date, and the remaining schedule. POST /assets/onboard records the asset at its REMAINING book value and posts ZERO journal entries — the van's cost and accumulated depreciation are already inside your opening-balance batch (13xx and 1359 lines). This is Business Central's 'suppress G/L integration during FA opening' rule: the register and the GL each get the values exactly once.",
+      "img": "screenshots/asset-onboard.png",
+      "box": {
+        "x": 780,
+        "y": 60,
+        "w": 470,
+        "h": 480
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Future depreciation posts itself",
+      "tag": "Dr 66xx / Cr 1359",
+      "narration": "The onboarded asset carries a generated schedule over its remaining basis. From now on each due period posts Dr 66xx Depreciation (the expense account matching the asset's NBR category (6603 Plant & Machinery here; 6605 for vehicles)) / Cr 1359 Accumulated Depreciation. On the Enterprise tier a daily job posts due periods automatically (fiscal-period locks respected); on Standard, finance clicks 'Post period' from the schedule view. Either path dedupes on a deterministic key — a crash-retry can never double-post a period.",
+      "img": "screenshots/asset-schedule.png",
+      "box": {
+        "x": 340,
+        "y": 90,
+        "w": 590,
+        "h": 440
+      }
+    },
+    {
+      "action": "NAVIGATE",
+      "title": "Prove the migration with the trial balance",
+      "tag": "Reports → Trial Balance",
+      "narration": "Every opening flow offset the SAME account — 3310 Retained Earnings — so the trial balance is the single verification gate: 1164 equals your physical stock value, 1141/2111 equal your receivable/payable lists, 13xx − 1359 equals your asset register's net book value, and 3310 absorbed the net of everything. If the TB ties to your old system's closing TB, the migration is complete. If it doesn't, the difference IS the list of what you haven't loaded.",
+      "img": "screenshots/trial-balance.png",
+      "box": {
+        "x": 300,
+        "y": 160,
+        "w": 940,
+        "h": 380
+      }
+    },
+    {
+      "action": "RESULT",
+      "title": "Post the drafts, close the opening period, trade",
+      "tag": "Period Close",
+      "narration": "Finance posts the draft opening entries (stock, partner balances, general batch), then closes the pre-go-live period so nothing backdates into migration history. From the first live sale onward the automation you configured takes over: order placement freezes cost into the line, shipment posts Dr 5111 COGS / Cr 1164, receipts post Dr 1164 / Cr 2125 GR-IR, and the profit dashboard reads real margins — because you seeded cost on day one.",
+      "img": "screenshots/period-close.png",
+      "box": {
+        "x": 300,
+        "y": 160,
+        "w": 940,
+        "h": 380
+      }
+    }
+  ]
+}

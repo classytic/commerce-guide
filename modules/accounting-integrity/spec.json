@@ -1,0 +1,149 @@
+{
+  "module": "Accounting Integrity",
+  "slug": "accounting-integrity",
+  "section": "Accounting · Integrity",
+  "branchContext": "Head Office (HO-001)",
+  "lede": "Four places where an ERP quietly lies about money — and how this ledger is built so it can't. A set of books has integrity when three things always hold: every entry balances (Dr = Cr), every real-world event that moves value posts SOMETHING, and the general ledger agrees with the subledgers and the warehouse. Most systems break one of these silently: they bury tax inside revenue, value a stock transfer at zero because nobody typed a cost, or let a warehouse move happen while the matching journal sits unposted. This guide follows the actual postings behind four such traps — a B2B invoice, an inter-branch transfer, a stock adjustment, and a correction — and shows the resolver logic that closes each. Every Dr/Cr below is the real posting the pipeline emits; account codes are the Bangladesh chart (country-pack resolved — swap the pack and the codes change, the logic doesn't).",
+  "out": "accounting-integrity.html",
+  "steps": [
+    {
+      "action": "ORIENT",
+      "title": "Integrity is a property of the pipeline, not a report you run at month-end",
+      "tag": "Dr = Cr, always",
+      "narration": "Every posting this engine emits is double-entry and balanced before it is ever written — the double-entry plugin rejects an unbalanced entry at the repository boundary, so a lopsided journal cannot reach the database. That is the floor, not the ceiling. The three failures that follow all PASS this balance check and still corrupt the books: a balanced entry can put the money in the WRONG account (tax buried in revenue), value a real movement at ZERO (uncosted transfer), or simply sit in DRAFT while the warehouse already moved. Balance is necessary, not sufficient. The rest of this guide is about the other three guarantees.",
+      "ledger": {
+        "title": "A cash sale — the shape every entry must hold",
+        "lines": [
+          { "code": "1112", "name": "Cash at Bank", "dr": "1,150", "cr": "" },
+          { "code": "4111", "name": "Sales Revenue", "dr": "", "cr": "1,000" },
+          { "code": "2132", "name": "Output VAT Payable", "dr": "", "cr": "150" }
+        ],
+        "totals": { "dr": "1,150", "cr": "1,150" },
+        "note": "Balanced AND every head is correct. The next three traps each break one of those two while staying balanced."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 1 — the B2B invoice that credited the whole gross to revenue",
+      "tag": "revenue NET of output VAT",
+      "narration": "A credit-sale invoice for ৳11,500 is ৳10,000 of revenue plus ৳1,500 of output VAT the business collected FOR the NBR — it was never income. The bug most invoicing engines ship (and the one this pipeline had on its manual path) credits the full ৳11,500 to Sales Revenue 4111. The entry still balances — A/R 11,500 debit, revenue 11,500 credit — which is exactly why it hides. But revenue is now overstated by the tax, income tax is computed on money that isn't yours, and account 2132 carries no liability so the Mushak 9.1 VAT return has nothing to tie back to. RESOLVE: the customer-invoice contract splits the gross — revenueCredit = totalAmount − vatAmount — and posts the tax to its own head. Revenue tells the truth; 2132 holds the NBR's money.",
+      "ledger": {
+        "title": "Invoice issued — VAT split out of revenue",
+        "lines": [
+          { "code": "1141", "name": "Accounts Receivable [partner: customer]", "dr": "11,500", "cr": "" },
+          { "code": "4111", "name": "Sales Revenue (net of output VAT)", "dr": "", "cr": "10,000" },
+          { "code": "2132", "name": "Output VAT Payable (to NBR)", "dr": "", "cr": "1,500" }
+        ],
+        "totals": { "dr": "11,500", "cr": "11,500" },
+        "note": "Same balanced total as the buggy version — but revenue is 10,000 not 11,500, and 2132 now carries the 1,500 the Mushak return reconciles."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 1 continued — VDS withholding does NOT shrink the VAT you owe",
+      "tag": "1153 receivable, full 2132",
+      "narration": "When the buyer is a designated withholding entity it deducts VDS — say 50% of the ৳1,500 VAT = ৳750 — from what it pays you, and remits that slice to the NBR on your behalf. The tempting shortcut is to net it against 2132 and show ৳750 owed. That is wrong: you still owe the NBR the FULL ৳1,500 of output VAT; the ৳750 the buyer withheld is a separate ASSET — a receivable you'll offset against your VAT payable at filing. So A/R drops to ৳10,750 (buyer pays less), a new 1153 VDS Receivable absorbs the ৳750, revenue stays ৳10,000, and 2132 stays the FULL ৳1,500. Two separate NBR positions, not one netted number — which is what lets the Mushak withholding schedule reconcile.",
+      "ledger": {
+        "title": "Invoice issued with 50% VDS withheld by buyer",
+        "lines": [
+          { "code": "1141", "name": "Accounts Receivable (net of VDS)", "dr": "10,750", "cr": "" },
+          { "code": "1153", "name": "VDS Receivable (buyer withheld)", "dr": "750", "cr": "" },
+          { "code": "4111", "name": "Sales Revenue (net of output VAT)", "dr": "", "cr": "10,000" },
+          { "code": "2132", "name": "Output VAT Payable — FULL", "dr": "", "cr": "1,500" }
+        ],
+        "totals": { "dr": "11,500", "cr": "11,500" },
+        "note": "2132 is still 1,500 — withholding never reduces the liability, it books a separate receivable that offsets at filing."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 2 — the inter-branch transfer that posted zero cost",
+      "tag": "cost cascade: line → layer → catalog",
+      "narration": "Move stock from Head Office to a store and the accounting must capitalise it in transit, not expense it: Dr 1179 Inventory in Transit, Cr 1164 Merchandise for the goods cost. But WHAT cost? The challan UI doesn't ask the operator to type one. The transfer bridge used to try only two sources — an explicit line cost, then the Flow cost-layer valuation — and if both were empty it flagged the line 'costMissing' and posted ZERO. A balanced entry of nothing: inventory leaves HO at full value on the shelf but the transit asset shows 0, so the moment it's the accountant's problem the balance sheet is already wrong. RESOLVE: the resolver now cascades to a THIRD source — the product's catalog cost (the same basis COGS uses) — before it ever gives up. Only a genuinely never-costed SKU lands in 'missing', and it's surfaced, not silently zeroed.",
+      "ledger": {
+        "title": "Transfer dispatched from HO — goods capitalised in transit",
+        "lines": [
+          { "code": "1179", "name": "Inventory in Transit", "dr": "5,000", "cr": "" },
+          { "code": "1164", "name": "Merchandise / Trading Goods", "dr": "", "cr": "5,000" }
+        ],
+        "totals": { "dr": "5,000", "cr": "5,000" },
+        "note": "The 5,000 came from the catalog fallback — the layer was thin and no line cost was typed. Before the fix this posted 0 / 0."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 2 landing — the receiving branch closes the transit and capitalises freight",
+      "tag": "1179 cleared, 2126 freight",
+      "narration": "The receive leg runs in the DESTINATION branch's scope: Dr 1164 Merchandise brings the goods onto the store's books, Cr 1179 clears the in-transit asset the dispatch opened. If freight was incurred, IAS 2 says capitalise it into inventory cost, not expense it — so a third line adds transit cost to 1164 with the credit going to 2126 Transfer Cost Clearing. Because both legs now resolve a real goods cost (thanks to the catalog cascade), 1179 opens and closes at the SAME number and nets to zero across the two branches — the sign that no value leaked in transit. A zero-cost dispatch would have left 1179 stuck with a one-sided balance forever.",
+      "ledger": {
+        "title": "Transfer received at store — transit cleared, freight capitalised",
+        "lines": [
+          { "code": "1164", "name": "Merchandise (goods + freight)", "dr": "5,300", "cr": "" },
+          { "code": "1179", "name": "Inventory in Transit (cleared)", "dr": "", "cr": "5,000" },
+          { "code": "2126", "name": "Transfer Cost Clearing (freight)", "dr": "", "cr": "300" }
+        ],
+        "totals": { "dr": "5,300", "cr": "5,300" },
+        "note": "1179 opened at 5,000 on dispatch and closes at 5,000 here — net zero. Freight (300) rode into inventory value, not expense."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 3 — the adjustment the warehouse already made, that the ledger hasn't",
+      "tag": "posted stock, DRAFT journal",
+      "narration": "A cycle count writes off ৳2,000 of shrinkage. Flow commits the stock reduction immediately — on-hand drops the instant the count posts. The accounting event fires AFTER, and the stock-adjustment contract deliberately creates its journal as a DRAFT for an accountant to review (the ERPNext/Odoo default), NOT auto-posted. That review gap is correct governance, but it opens a DRIFT: the warehouse says the stock is gone; the general ledger's inventory account 1164 still carries it, because the write-off journal is sitting in draft. Balanced, correct accounts — but unposted. Until someone posts it, the balance sheet overstates inventory and the P&L is missing the shrinkage expense. The entry is right; its STATE is the problem.",
+      "ledger": {
+        "title": "Shrinkage write-off — created as DRAFT",
+        "lines": [
+          { "code": "6711", "name": "Inventory Shrinkage / Loss (P&L)", "dr": "2,000", "cr": "" },
+          { "code": "1164", "name": "Merchandise / Trading Goods", "dr": "", "cr": "2,000" }
+        ],
+        "totals": { "dr": "2,000", "cr": "2,000" },
+        "note": "State = draft. Flow already dropped on-hand; 1164 in the GL won't drop until this posts. That gap is the drift."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 3 closed — the Inventory ↔ GL reconciliation surfaces every unposted draft",
+      "tag": "/reports/inventory-gl-reconciliation",
+      "narration": "You cannot fix drift you cannot see. The reconciliation report queries every INVENTORY-type journal still in draft — exactly the entries whose Flow movement has already committed — and totals them. That total, ৳2,000 here, is the precise amount by which the GL's inventory position lags the warehouse's committed reality. It ages each draft (a 45-day-old unposted write-off is a period-close hazard) and splits ACTIONABLE drafts — real value, just needs posting — from COST-MISSING placeholders that carry zero because no cost basis resolved yet and need a backfill BEFORE they can post to anything. Drive the total to zero and the ledger agrees with the warehouse again. The report is a pipeline handler, so it's also exposed as an MCP tool — the assistant can run it and tell you the drift without you opening a screen.",
+      "ledger": {
+        "title": "Reconciliation — draft INVENTORY entries (the drift)",
+        "lines": [
+          { "code": "ADJ", "name": "Shrinkage write-off · 2 days old · ACTIONABLE", "dr": "2,000", "cr": "" },
+          { "code": "COGS", "name": "Shipment cost placeholder · COST-MISSING", "dr": "0", "cr": "" }
+        ],
+        "totals": { "dr": "2,000", "cr": "" },
+        "note": "totalUnpostedValue = 2,000 (actionable only). The zero-value COGS placeholder is listed separately — it needs a cost basis, not a post."
+      }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "Trap 4 — correcting a posted entry without ever deleting or editing it",
+      "tag": "reversal swaps Dr ↔ Cr",
+      "narration": "The shrinkage was double-counted — the write-off is wrong. In a system with integrity you NEVER delete or edit a posted journal; the audit trail is sacred. You post a REVERSAL: a new counter-entry that swaps every debit and credit of the original. The original stays posted, marked reversed=true and linked by reversalOf; the reversal nets it to zero. Here the reversal is Dr 1164 / Cr 6711 — the mirror of the write-off — restoring inventory and cancelling the expense. The reversal carries a reason ('double counted') appended to its label, so the GL records WHY, not just that it happened. This is Odoo's _reverse_moves and ERPNext's amendment, done as a forward correction.",
+      "ledger": {
+        "title": "Reversal of the shrinkage write-off",
+        "lines": [
+          { "code": "1164", "name": "Merchandise (restored)", "dr": "2,000", "cr": "" },
+          { "code": "6711", "name": "Inventory Shrinkage (cancelled)", "dr": "", "cr": "2,000" }
+        ],
+        "totals": { "dr": "2,000", "cr": "2,000" },
+        "note": "Label: 'Reversal of ADJ-… — double counted'. Original stays posted (reversed=true); nothing was deleted."
+      }
+    },
+    {
+      "action": "RESULT",
+      "title": "One click, two safe modes — and the books tie out",
+      "tag": "Reverse to Draft · Reverse & Post",
+      "narration": "The reversal is one action with a governance choice. 'Reverse to Draft' (the default) creates the counter-entry unposted so a second person reviews it before it hits the ledger — segregation of duties for period-sensitive corrections. 'Reverse & Post' (autoPost) posts it immediately — Odoo's cancel=True — for a confidently-wrong entry a manager wants gone now. Either way the correction is a first-class, reasoned, reversible posting. Across all four traps the invariant held: every entry balanced, every real event posted something real, and the reconciliation lets you prove the GL still agrees with the warehouse. That is what integrity means here — not a report you run, but a pipeline that refuses to lie.",
+      "ledger": {
+        "title": "After reversal — inventory and P&L back to truth",
+        "lines": [
+          { "code": "1164", "name": "Merchandise — net effect of write-off + reversal", "dr": "0", "cr": "0" },
+          { "code": "6711", "name": "Shrinkage — net effect", "dr": "0", "cr": "0" }
+        ],
+        "note": "Write-off and its reversal net to zero on both heads, but BOTH postings remain in the audit trail, each with its reason."
+      }
+    }
+  ]
+}

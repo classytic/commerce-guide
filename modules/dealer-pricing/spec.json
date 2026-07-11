@@ -1,0 +1,42 @@
+{
+  "module": "Dealer & Wholesale Pricing",
+  "slug": "dealer-pricing",
+  "section": "Sell · Pricing rules",
+  "branchContext": "Company-wide (catalog pricing, shared across branches)",
+  "lede": "Dealers and wholesale buyers don't pay retail. A price list is a stack of RULES the pricing engine walks at add-to-cart time — cost-plus markup, %-off-list tiers, volume brackets — resolved deterministically by scope and quantity. This guide builds the classic dealer rule: Cost Price + 30%, the same 'landed cost plus margin' every distributor uses, with the account's own cost as the base so the margin holds even as purchase prices move.",
+  "out": "dealer-pricing.html",
+  "steps": [
+    {
+      "action": "NAVIGATE",
+      "title": "Open Price Lists",
+      "tag": "Pricing → Price Lists",
+      "narration": "A deployment can run many price lists — retail, a channel-specific list, one per dealer tier. Each is a named container of rules with a currency and an active flag. Products are shared company-wide; the price a given buyer sees is whichever list resolves for them, so the list is the pricing dimension, not the product.",
+      "img": "screenshots/dealer-list.png",
+      "box": { "x": 300, "y": 150, "w": 940, "h": 380 }
+    },
+    {
+      "action": "CLICK",
+      "title": "Create the dealer price list",
+      "tag": "New Price List",
+      "narration": "Name it for the segment it serves — 'Dealer / Wholesale — Cost Plus'. Currency is the tenant default. Leave Channel unset to apply it across every sales surface, or scope it to one channel (POS, a specific storefront) when only that surface should see dealer prices. The list is empty until you add rules.",
+      "img": "screenshots/dealer-create.png",
+      "box": { "x": 341, "y": 250, "w": 520, "h": 200 }
+    },
+    {
+      "action": "CHOOSE",
+      "title": "Add a Cost-Plus rule",
+      "tag": "Add Rule → Formula / Cost Price",
+      "narration": "Set Computation to Formula and Base to Cost Price — this is what makes it cost-PLUS: the rule builds the price up from what YOU paid, not down from a retail sticker. Base 'Cost Price' reads the product's own cost, so the dealer margin holds automatically when purchase prices change. 'Markup % over base' is the headline field: enter 30 and the engine computes cost × 1.30. Markup applies first (builds the price); an optional Discount % then trims it, a Surcharge adds a flat handling fee, and Round-to-nearest tidies the result.",
+      "img": "screenshots/dealer-rule.png",
+      "box": { "x": 341, "y": 200, "w": 520, "h": 320 }
+    },
+    {
+      "action": "RESOLVE",
+      "title": "How the engine resolves a dealer price",
+      "tag": "Cost 10,000 → 13,000",
+      "narration": "At add-to-cart the pricing engine finds every rule that applies (by scope and quantity), sorts them — scope rank, then higher min-quantity, then priority ascending (LOWER priority runs first) — and applies the winner. For a product costing 10,000 (minor units), this rule returns 13,000: cost × (1 + 30/100). Add a second rule with a higher Min Qty and its own markup to reward volume; the bracket with the highest satisfied Min Qty wins. The whole resolution is in-process — pricing never makes an HTTP hop on the hot path.",
+      "img": "screenshots/dealer-rule.png",
+      "box": { "x": 341, "y": 200, "w": 520, "h": 320 }
+    }
+  ]
+}
